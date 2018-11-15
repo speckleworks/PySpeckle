@@ -6,6 +6,10 @@ A Python Speckle Client
 > Speckle: open digital infrastructure for designing, making and operating the built environment.
 > We reimagine the design process from the Internet up: Speckle is an open source (MIT) initiative for developing an extensible Design & AEC data communication and collaboration platform.
 
+## Installation
+PySpeckle can be installed through `pip`:
+`pip install speckle`
+
 ## Disclaimer
 This code is very WIP and as such should be used with extreme caution, on non-sensitive projects.
 There is much to be tightened up, optimized, organized, etc. but the basic functionality is there.
