@@ -75,6 +75,9 @@ class SpeckleApiClient():
 
         return profiles
 
+    def set_profile(self, server, authtoken):
+        self.server = server
+        self.session.headers.update({'Authorization': authtoken})
 
     def use_existing_profile(self, email, directory=None):
         profiles = self.load_local_profiles(directory)
@@ -84,6 +87,7 @@ class SpeckleApiClient():
             return True
         return False
 
+        
     '''
     API calls
     '''
@@ -353,78 +357,3 @@ class SpeckleApiClient():
             return SpeckleResource(r.json())
         return None
     
-if __name__ == '__main__':
-
-
-    ''' 
-    Create client and login
-    '''
-
-    client = SpeckleApiClient()
-    client.verbose = True
-
-    res = client.UserLoginAsync({"email":"tom.svilans@gmail.com", "password":"hotdogjuice"})
-    #print(client.session.headers)
-
-    '''
-    Get a list of all available streams
-    '''
-
-    res = client.StreamsGetAllAsync()
-
-    if res is None:
-        raise Exception
-
-    streams = {x.name: x for x in res.resources}
-
-    print("\nStreams:\n")
-    for stream in streams.values():
-        print ("%s \t(%s)" % (stream.name, stream.streamId))
-
-    '''
-    Get some objects from a stream, but only their type and name
-    '''
-
-    res = client.StreamGetObjectsAsync(streams['Kelowna'].streamId, "fields=type,name,_id")
-
-    if res is None:
-        raise Exception
-
-    objects = {x._id: x for x in res.resources}
-
-    print("\nObjects:\n")
-    for o in objects.values():
-        print ("%s \t(%s, %s)" % (o.name, o.type, o._id))
-
-    '''
-    Get specific stream data
-    '''
-
-    res = client.StreamGetAsync(streams['Kelowna'].streamId)
-
-    if res is None:
-        raise Exception
-
-    print(SpeckleResource.to_json_pretty(res.resource))
-
-    '''
-    Get a list of some objects
-    '''
-
-    objectList = list(objects.values())
-    res = client.ObjectGetBulkAsync([x._id for x in objectList[:4]], "omit=vertices,faces,properties.texture_coordinates")
-
-    if res is None:
-        raise Exception
-
-    print(SpeckleResource.to_json_pretty(res.resources))
-
-    res = client.ObjectGetAsync(objectList[0]._id, "fields=name,owner,private")
-
-    if res is None:
-        raise Exception
-
-    print(SpeckleResource.to_json_pretty(res.resource))
-
-
-
