@@ -363,7 +363,7 @@ if __name__ == '__main__':
     client = SpeckleApiClient()
     client.verbose = True
 
-    res = client.UserLoginAsync({"email":"tom.svilans@gmail.com", "password":"hotdogjuice"})
+    res = client.UserLoginAsync({"email":"email", "password":"pwd"})
     #print(client.session.headers)
 
     '''
