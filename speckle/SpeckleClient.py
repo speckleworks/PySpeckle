@@ -2,9 +2,8 @@
 import requests, json, os
 import struct, base64
 
-
-from .SpeckleResource import SpeckleResource
-
+def jdumps(msg):
+    return json.dumps(msg, indent=4, sort_keys=True)
 
 class SpeckleApiClient():
 
@@ -36,6 +35,8 @@ class SpeckleApiClient():
             self.log("Request failed: %s" % r.reason)
         elif r.status_code != 200 and r.status_code != 204:
             self.log("The HTTP status code of the response was not expected: %s,  %s" % (r.status_code, r.reason))
+        else:
+            self.log("Unknown response: %s,  %s" % (r.status_code, r.reason))            
         # Debug
         if self.verbose:
             print()
@@ -138,19 +139,18 @@ class SpeckleApiClient():
         '''
         payload = []
         for o in objectList:
-            oDict = SpeckleResource.to_dict(obj)
+            if '_id' in o.keys():
+                del o['_id']
+            if 'hash' in o.keys():
+                del o['hash']
 
-            if '_id' in oDict.keys():
-                del oDict['_id']
-            if 'hash' in oDict.keys():
-                del oDict['hash']
+            payload.append(o)
 
-            payload.append(oDict)
-
-        r = requests.post(url, json.dumps(payload), headers=self.CreateHeader())
+        url = self.server + "/objects"
+        r = self.session.post(url, json.dumps(payload))
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None 
 
     def ObjectDeleteAsync(self, objectId):
@@ -164,7 +164,7 @@ class SpeckleApiClient():
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None
 
     def ObjectGetBulkAsync(self, objectIds, query=""):
@@ -175,7 +175,7 @@ class SpeckleApiClient():
         r = self.session.post(url, data=json.dumps(objectIds))
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None    
 
     def ObjectUpdateAsync(self, objectId, speckle_object):
@@ -184,16 +184,18 @@ class SpeckleApiClient():
         '''
         assert objectId is not None
         url = self.server + "/objects/%s" % objectId
-        r = self.session.put(url, SpeckleResource.to_json(speckle_object))
+        r = self.session.put(url, json.dumps(speckle_object))
+
+
+    def ObjectUpdatePropertiesAsync(objectId, prop):
+        url = self.server + "/objects/%s/properties"
+        r = self.session.put(url, json.dumps(prop))
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None
 
     '''
-    def ObjectUpdatePropertiesAsync(string, object, System.Threading.CancellationToken):
-        raise NotImplmentedError
-
     def PrepareRequest(System.Net.Http.HttpClient, System.Net.Http.HttpRequestMessage, System.Text.StringBuilder):
         raise NotImplmentedError
 
@@ -215,6 +217,7 @@ class SpeckleApiClient():
     def ProjectUpdateAsync(string, SpeckleCore.Project, System.Threading.CancellationToken):
         raise NotImplmentedError
     '''
+    
     def StreamCloneAsync(self, streamId):
         raise NotImplmentedError
 
@@ -223,10 +226,10 @@ class SpeckleApiClient():
         Create new stream
         '''
         url = self.baseUrl + "/streams"
-        r = requests.post(url, data=SpeckleResource.to_json(stream))
+        r = session.post(url, data=json.dumps(stream))
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None 
 
     def StreamDeleteAsync(self, streamId):
@@ -238,7 +241,7 @@ class SpeckleApiClient():
         r = self.session.delete(url)
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None
 
     def StreamDiffAsync(self, streamId1, streamId2):
@@ -249,7 +252,7 @@ class SpeckleApiClient():
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None
 
     def StreamGetAsync(self, streamId, query=""):
@@ -260,7 +263,7 @@ class SpeckleApiClient():
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None
 
     def StreamGetObjectsAsync(self, streamId, query=""):
@@ -271,18 +274,18 @@ class SpeckleApiClient():
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None
 
-    def StreamsGetAllAsync(self):
+    def StreamsGetAllAsync(self, query=""):
         '''
         Get all streams available to user.
         '''
-        url = self.server + "/streams"
+        url = self.server + "/streams?omit=objects"
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None
 
     def StreamUpdateAsync(self, streamId, stream):
@@ -291,14 +294,19 @@ class SpeckleApiClient():
         '''
         assert streamId is not None
         url = self.server + "/streams/%s" % streamId
-        r = self.session.put(url, SpeckleResource.to_json(stream))
+        r = self.session.put(url, json.dumps(stream))
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None   
 
     def UserGetAsync(self):
-        raise NotImplmentedError
+        url = self.server + "/accounts"
+        r = self.session.get(url)
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None
 
     def UserGetProfileByIdAsync(self, userId):
         raise NotImplmentedError
@@ -336,7 +344,7 @@ class SpeckleApiClient():
         r = self.session.post(url, data=json.dumps(user))
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None
 
     def UserSearchAsync(self, user):
@@ -354,6 +362,6 @@ class SpeckleApiClient():
         r = self.session.put(url, data=json.dumps(user))
 
         if self.check_response_status_code(r):
-            return SpeckleResource(r.json())
+            return r.json()
         return None
     

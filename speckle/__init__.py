@@ -1,2 +1,1 @@
-from .SpeckleClient import SpeckleApiClient
-from .SpeckleResource import SpeckleResource
+from .SpeckleClient import SpeckleApiClient, jdumps
