@@ -1,5 +1,6 @@
 
 import requests, json, os
+import sqlite3, contextlib
 import struct, base64
 
 def jdumps(msg):
@@ -50,18 +51,58 @@ class SpeckleApiClient():
         assert ("authtoken" in profile.keys())
 
         if directory == None:
-            directory = os.path.join(os.getenv('LOCALAPPDATA'), 'SpeckleSettings')
+            directory = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'MigratedAccounts'))
 
         if os.path.isdir(directory):
             with open(os.path.join(directory, profile['email']) + ".JWT .txt", 'w') as f:
                 f.write("%s,%s,%s,%s,%s\n" % (profile['email'], profile['authtoken'], profile['server_name'], profile['server'], profile['server']))
+    
+    def write_profile_to_database(self, profile, filepath=None):
+        assert ("email" in profile.keys())
+        assert ("server" in profile.keys())
+        assert ("server_name" in profile.keys())
+        assert ("authtoken" in profile.keys())
+
+        if filepath == None:
+            filepath = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'SpeckleCache.db'))
+
+        if os.path.isfile(filepath):
+            try:
+                conn = sqlite3.connect(filepath)
+            except:
+                print ("Accessing database failed...")
+                return None
+
+            #with contextlib.closing(sqlite3.connect(filepath)) as con:
+            with conn:
+                c = conn.cursor()
+                c.execute(""" INSERT INTO Account(AccountId,ServerName,RestApi,Email,Token,IsDefault)
+                             VALUES(NULL,?,?,?,?,0) """, (profile['server_name'], profile['server'], profile['email'], profile['authtoken']))
+                conn.commit()
+                return c.lastrowid
+
+    def load_local_profiles_from_database(self, filepath=None):
+        profiles = []
+        if filepath == None:
+            filepath = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'SpeckleCache.db'))
+
+        accounts = None
+        if os.path.isfile(filepath):
+            with contextlib.closing(sqlite3.connect(filepath)) as con:
+                c = con.cursor()
+                c.execute("SELECT * FROM Account")
+                accounts = c.fetchall()
+                #names = [x[0] for x in c.description]
+                for a in accounts:
+                    profiles.append({'server_name':a[1], 'server':a[2], 'email':a[3], 'authtoken':a[4]})
+        return profiles
 
 
     def load_local_profiles(self, directory=None):
         profiles = {}
 
         if directory == None:
-            directory = os.path.join(os.getenv('LOCALAPPDATA'), 'SpeckleSettings')
+            directory = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'MigratedAccounts'))
 
         if os.path.isdir(directory):
             files = [os.path.join(directory, x) for x in os.listdir(directory) if x.endswith('.txt')]
@@ -93,8 +134,16 @@ class SpeckleApiClient():
     API calls
     '''
 
-    def ClientCreateAsync(self, client): 
-        raise NotImplmentedError
+    def ClientCreateAsync(self, client):
+        '''
+        Create client
+        '''
+        url = self.server + "/clients"
+        r = self.session.post(url, json.dumps(client))
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None 
 
     def ClientDeleteAsync(self, client):
         raise NotImplmentedError
@@ -105,9 +154,17 @@ class SpeckleApiClient():
     def ClientGetAsync(self, client):
         raise NotImplmentedError
 
-    def ClientUpdateAsync(self, str, client):
-        raise NotImplmentedError
+    def ClientUpdateAsync(self, clientId, client):
+        '''
+        Update client
+        '''
+        url = self.server + "/clients/%s" % clientId
+        r = self.session.put(url, json.dumps(client))
 
+        if self.check_response_status_code(r):
+            return r.json()
+        return None
+        
     def CommentCreateAsync(self, resourceType, str, comment):
         raise NotImplmentedError
 
@@ -154,7 +211,12 @@ class SpeckleApiClient():
         return None 
 
     def ObjectDeleteAsync(self, objectId):
-        raise NotImplmentedError
+        url = self.server + "/objects/%s" % (objectId)
+        r = self.session.delete(url)
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None
 
     def ObjectGetAsync(self, objectId, query=""):
         '''
