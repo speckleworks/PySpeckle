@@ -48,20 +48,20 @@ class SpeckleApiClient():
         assert ("email" in profile.keys())
         assert ("server" in profile.keys())
         assert ("server_name" in profile.keys())
-        assert ("authtoken" in profile.keys())
+        assert ("apitoken" in profile.keys())
 
         if directory == None:
             directory = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'MigratedAccounts'))
 
         if os.path.isdir(directory):
             with open(os.path.join(directory, profile['email']) + ".JWT .txt", 'w') as f:
-                f.write("%s,%s,%s,%s,%s\n" % (profile['email'], profile['authtoken'], profile['server_name'], profile['server'], profile['server']))
+                f.write("%s,%s,%s,%s,%s\n" % (profile['email'], profile['apitoken'], profile['server_name'], profile['server'], profile['server']))
     
     def write_profile_to_database(self, profile, filepath=None):
         assert ("email" in profile.keys())
         assert ("server" in profile.keys())
         assert ("server_name" in profile.keys())
-        assert ("authtoken" in profile.keys())
+        assert ("apitoken" in profile.keys())
 
         if filepath == None:
             filepath = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'SpeckleCache.db'))
@@ -77,7 +77,7 @@ class SpeckleApiClient():
             with conn:
                 c = conn.cursor()
                 c.execute(""" INSERT INTO Account(AccountId,ServerName,RestApi,Email,Token,IsDefault)
-                             VALUES(NULL,?,?,?,?,0) """, (profile['server_name'], profile['server'], profile['email'], profile['authtoken']))
+                             VALUES(NULL,?,?,?,?,0) """, (profile['server_name'], profile['server'], profile['email'], profile['apitoken']))
                 conn.commit()
                 return c.lastrowid
 
@@ -94,12 +94,12 @@ class SpeckleApiClient():
                 accounts = c.fetchall()
                 #names = [x[0] for x in c.description]
                 for a in accounts:
-                    profiles.append({'server_name':a[1], 'server':a[2], 'email':a[3], 'authtoken':a[4]})
+                    profiles.append({'server_name':a[1], 'server':a[2], 'email':a[3], 'apitoken':a[4]})
         return profiles
 
 
     def load_local_profiles(self, directory=None):
-        profiles = {}
+        profiles = []
 
         if directory == None:
             directory = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'MigratedAccounts'))
@@ -113,19 +113,19 @@ class SpeckleApiClient():
 
                     if len(tokens) < 4: return None
 
-                    profiles[tokens[0]] = {'server_name': tokens[2], 'authtoken': tokens[1], 'server': tokens[3]}
+                    profiles.append({'email':tokens[0], 'server_name': tokens[2], 'apitoken': tokens[1], 'server': tokens[3]})
 
         return profiles
 
-    def set_profile(self, server, authtoken):
+    def set_profile(self, server, apitoken):
         self.server = server
-        self.session.headers.update({'Authorization': authtoken})
+        self.session.headers.update({'Authorization': apitoken})
 
     def use_existing_profile(self, email, directory=None):
         profiles = self.load_local_profiles(directory)
         if email in profiles.keys():
             self.server = profiles[email]['server']
-            self.session.headers.update({'Authorization': profiles[email]['authtoken']})
+            self.session.headers.update({'Authorization': profiles[email]['apitoken']})
             return True
         return False
 
