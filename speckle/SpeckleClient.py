@@ -287,7 +287,7 @@ class SpeckleApiClient():
         '''
         Create new stream
         '''
-        url = self.baseUrl + "/streams"
+        url = self.server + "/streams"
         r = session.post(url, data=json.dumps(stream))
 
         if self.check_response_status_code(r):
