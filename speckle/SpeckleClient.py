@@ -24,20 +24,20 @@ class SpeckleApiClient():
     '''
 
     def log(self, msg):
-        print ('SpeckleClient: %s' % msg)
+        print ('SpeckleClient: {}'.format(msg))
 
     def check_response_status_code(self, r):
 
         # Parse response
         if r.status_code == 200:
-            self.log("Request successful: %s" % r.reason)
+            self.log("Request successful: {}".format(r.reason))
             return True
         elif r.status_code == 400:
-            self.log("Request failed: %s" % r.reason)
+            self.log("Request failed: {}".format(r.reason))
         elif r.status_code != 200 and r.status_code != 204:
-            self.log("The HTTP status code of the response was not expected: %s,  %s" % (r.status_code, r.reason))
+            self.log("The HTTP status code of the response was not expected: {},  {}".format(r.status_code, r.reason))
         else:
-            self.log("Unknown response: %s,  %s" % (r.status_code, r.reason))            
+            self.log("Unknown response: {},  {}".format(r.status_code, r.reason))            
         # Debug
         if self.verbose:
             print()
@@ -55,7 +55,7 @@ class SpeckleApiClient():
 
         if os.path.isdir(directory):
             with open(os.path.join(directory, profile['email']) + ".JWT .txt", 'w') as f:
-                f.write("%s,%s,%s,%s,%s\n" % (profile['email'], profile['apitoken'], profile['server_name'], profile['server'], profile['server']))
+                f.write("{},{},{},{},{}\n".format(profile['email'], profile['apitoken'], profile['server_name'], profile['server'], profile['server']))
     
     def write_profile_to_database(self, profile, filepath=None):
         assert ("email" in profile.keys())
@@ -166,7 +166,7 @@ class SpeckleApiClient():
         '''
         Update client
         '''
-        url = self.server + "/clients/%s" % clientId
+        url = self.server + "/clients/{}".format(clientId)
         r = self.session.put(url, json.dumps(client))
 
         if self.check_response_status_code(r):
@@ -219,7 +219,10 @@ class SpeckleApiClient():
         return None 
 
     def ObjectDeleteAsync(self, objectId):
-        url = self.server + "/objects/%s" % (objectId)
+        '''
+        Delete a specific object
+        '''
+        url = self.server + "/objects/{}}".format(objectId)
         r = self.session.delete(url)
 
         if self.check_response_status_code(r):
@@ -230,7 +233,7 @@ class SpeckleApiClient():
         '''
         Get a specific object
         '''
-        url = self.server + "/objects/%s?%s" % (objectId, query)
+        url = self.server + "/objects/{}?{}}".format(objectId, query)
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
@@ -241,7 +244,7 @@ class SpeckleApiClient():
         '''
         Get a list of objects at once
         '''
-        url = self.server + "/objects/getbulk?%s" % query
+        url = self.server + "/objects/getbulk?{}".format(query)
         r = self.session.post(url, data=json.dumps(objectIds))
 
         if self.check_response_status_code(r):
@@ -253,12 +256,12 @@ class SpeckleApiClient():
         Update object.
         '''
         assert objectId is not None
-        url = self.server + "/objects/%s" % objectId
+        url = self.server + "/objects/{}}".format(objectId)
         r = self.session.put(url, json.dumps(speckle_object))
 
 
     def ObjectUpdatePropertiesAsync(objectId, prop):
-        url = self.server + "/objects/%s/properties"
+        url = self.server + "/objects/{}/properties".format(objectId)
         r = self.session.put(url, json.dumps(prop))
 
         if self.check_response_status_code(r):
@@ -293,6 +296,8 @@ class SpeckleApiClient():
         Get all of a user's projects
         '''
         url = self.server + "/projects"
+        if query:
+            url += "?{}".format(query)
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
@@ -370,7 +375,7 @@ class SpeckleApiClient():
         Delete stream.
         '''
         assert streamId is not None
-        url = self.server + "/streams/%s" % streamId
+        url = self.server + "/streams/{}".format(streamId)
         r = self.session.delete(url)
 
         if self.check_response_status_code(r):
@@ -381,7 +386,7 @@ class SpeckleApiClient():
         '''
         Diff two streams
         '''
-        url = self.server + "/streams/%s/diff/%s" % (streamId1, streamId2)
+        url = self.server + "/streams/{}/diff/{}".format(streamId1, streamId2)
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
@@ -392,7 +397,7 @@ class SpeckleApiClient():
         '''
         Get stream
         '''
-        url = self.server + "/streams/%s?%s" % (streamId, query)
+        url = self.server + "/streams/{}?{}".format(streamId, query)
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
@@ -403,7 +408,7 @@ class SpeckleApiClient():
         '''
         Get objects on stream..
         '''
-        url = self.server + "/streams/%s/objects?%s" % (streamId, query)
+        url = self.server + "/streams/{}/objects?{}".format(streamId, query)
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
@@ -426,7 +431,7 @@ class SpeckleApiClient():
         Update stream.
         '''
         assert streamId is not None
-        url = self.server + "/streams/%s" % streamId
+        url = self.server + "/streams/{}".format(streamId)
         r = self.session.put(url, json.dumps(stream))
 
         if self.check_response_status_code(r):
