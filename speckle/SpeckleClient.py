@@ -267,29 +267,28 @@ class SpeckleApiClient():
         if self.check_response_status_code(r):
             return r.json()
         return None
+    
+    def ProjectCreateAsync(self, project):
+        '''
+        Create project
+        '''
+        url = self.server + "/projects"
+        r = self.session.post(url, json.dumps(project))
 
-    '''
-    def PrepareRequest(System.Net.Http.HttpClient, System.Net.Http.HttpRequestMessage, System.Text.StringBuilder):
-        raise NotImplmentedError
+        if self.check_response_status_code(r):
+            return r.json()
+        return None 
 
-    def ProcessResponse(System.Net.Http.HttpClient, System.Net.Http.HttpResponseMessage):
-        raise NotImplmentedError
+    def ProjectDeleteAsync(self, projectId):
+        '''
+        Delete a project using the projectId
+        '''
+        url = self.server + "/projects/{}".format(projectId)
+        r = self.session.delete(url)
 
-    def ProjectCreateAsync(SpeckleCore.Project, System.Threading.CancellationToken):
-        raise NotImplmentedError
-
-    def ProjectDeleteAsync(string, System.Threading.CancellationToken):
-        raise NotImplmentedError
-
-    def ProjectGetAllAsync(System.Threading.CancellationToken):
-        raise NotImplmentedError
-
-    def ProjectGetAsync(string, System.Threading.CancellationToken):
-        raise NotImplmentedError
-
-    def ProjectUpdateAsync(string, SpeckleCore.Project, System.Threading.CancellationToken):
-        raise NotImplmentedError
-    '''
+        if self.check_response_status_code(r):
+            return r.json()
+        return None
     
     def ProjectGetAllAsync(self, query=""):
         '''
@@ -315,17 +314,6 @@ class SpeckleApiClient():
             return r.json()
         return None 
 
-    def ProjectCreateAsync(self, project):
-        '''
-        Create project
-        '''
-        url = self.server + "/projects"
-        r = self.session.post(url, json.dumps(project))
-
-        if self.check_response_status_code(r):
-            return r.json()
-        return None 
-
     def ProjectUpdateAsync(self, projectId, project):
         '''
         Update an existing project
@@ -337,17 +325,6 @@ class SpeckleApiClient():
             return r.json()
         return None 
 
-    def ProjectDeleteAsync(self, projectId):
-        '''
-        Delete a project using the projectId
-        '''
-        url = self.server + "/projects/{}".format(projectId)
-        r = self.session.delete(url)
-
-        if self.check_response_status_code(r):
-            return r.json()
-        return None
-    
     def StreamCloneAsync(self, streamId):
         '''
         Clone an exsting stream
