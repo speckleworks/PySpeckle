@@ -148,8 +148,16 @@ class SpeckleApiClient():
     def ClientDeleteAsync(self, client):
         raise NotImplmentedError
 
-    def ClientGetAllAsync():
-        raise NotImplmentedError
+    def ClientGetAllAsync(self):
+        '''
+        Gets a user's profile
+        '''
+        url = self.server + "/clients"
+        r = self.session.get(url)
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None
 
     def ClientGetAsync(self, client):
         raise NotImplmentedError
@@ -280,8 +288,71 @@ class SpeckleApiClient():
         raise NotImplmentedError
     '''
     
+    def ProjectGetAllAsync(self, query=""):
+        '''
+        Get all of a user's projects
+        '''
+        url = self.server + "/projects"
+        r = self.session.get(url)
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None
+    
+    def ProjectGetAsync(self, projectId):
+        '''
+        Get project by id
+        '''
+        url = self.server + "/projects/{}".format(projectId)
+        r = self.session.get(url)
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None 
+
+    def ProjectCreateAsync(self, project):
+        '''
+        Create project
+        '''
+        url = self.server + "/projects"
+        r = self.session.post(url, json.dumps(project))
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None 
+
+    def ProjectUpdateAsync(self, projectId, project):
+        '''
+        Update an existing project
+        '''
+        url = self.server + "/projects/{}".format(projectId)
+        r = self.session.put(url, json.dumps(project))
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None 
+
+    def ProjectDeleteAsync(self, projectId):
+        '''
+        Delete a project using the projectId
+        '''
+        url = self.server + "/projects/{}".format(projectId)
+        r = self.session.delete(url)
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None
+    
     def StreamCloneAsync(self, streamId):
-        raise NotImplmentedError
+        '''
+        Clone an exsting stream
+        '''
+        url = self.server + "/streams/{}/clone".format(streamId)
+        r = self.session.post(url)
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None
 
     def StreamCreateAsync(self, stream):
         '''
@@ -371,7 +442,15 @@ class SpeckleApiClient():
         return None
 
     def UserGetProfileByIdAsync(self, userId):
-        raise NotImplmentedError
+        '''
+        Get a user's profile
+        '''
+        url = self.server + "/accounts/{}".format(userId)
+        r = self.session.get(url)
+
+        if self.check_response_status_code(r):
+            return r.json()
+        return None
 
     def UserLoginAsync(self, user):
         '''
