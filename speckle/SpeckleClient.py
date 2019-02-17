@@ -148,11 +148,11 @@ class SpeckleApiClient():
     def ClientDeleteAsync(self, client):
         raise NotImplmentedError
 
-    def ClientGetAllAsync(self):
+    def ClientGetAllAsync(self, query=""):
         '''
         Gets a user's profile
         '''
-        url = self.server + "/clients"
+        url = self.server + "/clients?{}".format(query)
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
@@ -222,7 +222,7 @@ class SpeckleApiClient():
         '''
         Delete a specific object
         '''
-        url = self.server + "/objects/{}}".format(objectId)
+        url = self.server + "/objects/{}".format(objectId)
         r = self.session.delete(url)
 
         if self.check_response_status_code(r):
@@ -233,7 +233,7 @@ class SpeckleApiClient():
         '''
         Get a specific object
         '''
-        url = self.server + "/objects/{}?{}}".format(objectId, query)
+        url = self.server + "/objects/{}?{}".format(objectId, query)
         r = self.session.get(url)
 
         if self.check_response_status_code(r):
@@ -256,11 +256,11 @@ class SpeckleApiClient():
         Update object.
         '''
         assert objectId is not None
-        url = self.server + "/objects/{}}".format(objectId)
+        url = self.server + "/objects/{}".format(objectId)
         r = self.session.put(url, json.dumps(speckle_object))
 
 
-    def ObjectUpdatePropertiesAsync(objectId, prop):
+    def ObjectUpdatePropertiesAsync(self, objectId, prop):
         url = self.server + "/objects/{}/properties".format(objectId)
         r = self.session.put(url, json.dumps(prop))
 
