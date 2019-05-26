@@ -46,6 +46,8 @@ class Resource(ResourceBase):
                 'method': 'PUT'
             }
         })
+           
+        self.schema = SpeckleObject
 
     def get_bulk(self, data):
         return self.make_request('get_bulk', '/getbulk', data)
