@@ -97,8 +97,10 @@ class ResourceBase(object):
         print(json.dumps(response, indent=2))
         if comment:
             return self.comment_schema.parse_obj(response)
-        else:
+        elif self.schema:
             return self.schema.parse_obj(response)
+        else:
+            return response
 
 
     def make_request(self, method, path, data=None, comment=False):
