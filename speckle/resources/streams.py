@@ -76,3 +76,6 @@ class Resource(ResourceBase):
 
     def list_clients(self, id):
         return self.make_request('list_clients', '/' + id + '/clients')
+
+    def list(self):
+        return self.make_request('list', '?omit=objects')  
