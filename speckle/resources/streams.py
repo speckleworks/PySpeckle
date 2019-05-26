@@ -41,6 +41,7 @@ class Stream(ResourceBaseSchema):
     commitMessage: str  = 'Modified stream'
     objects: List[SpeckleObject] = []
     layers: List[Layer] = []
+    streamId: str
 
 
 class Resource(ResourceBase):
