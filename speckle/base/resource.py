@@ -7,27 +7,41 @@ from dataclasses import dataclass
 from datetime import datetime
 
 class ResourceBaseSchema(BaseModel):
-    id: Optional[str] # Optional[str]
+    id: Optional[str]
     private: Optional[bool]
     canRead: Optional[List[str]]
     canWrite: Optional[List[str]]
+    owner: Optional[str]
     anonymousComments: Optional[bool]
     comments: Optional[List[str]]
-    createdAt: Optional[datetime]
-    updatedAt: Optional[datetime]
+    createdAt: Optional[str]
+    updatedAt: Optional[str]
 
     class Config:
         fields = {'id': '_id'}
 
+class ResourceInfo(BaseModel):
+    resourceType: str
+    resourceId: str
 
-class Comment(ResourceBaseSchema):
-    resource: dict = {}
-    text: str
-    assignedTo: Optional[List[str]]
+class Comment(BaseModel):
+    id: Optional[str]
+    owner: Optional[str]
+    comments: Optional[List[str]]
+    text: Optional[str]
+    flagged: Optional[bool]
+    resource: Optional[ResourceInfo]
+    otherResources: Optional[List[ResourceInfo]]
     closed: Optional[bool]
+    assignedTo: Optional[List[str]]
     labels: Optional[List[str]]
-    view: dict = {}
-    screenshot: str = None
+    priority: Optional[str]
+    status: Optional[str]
+    view: Optional[dict]
+    screenshot: Optional[str]
+
+    class Config:
+        fields = {'id': '_id'}
 
 
 def clean_empty(d):
@@ -39,9 +53,10 @@ def clean_empty(d):
 
 class ResourceBase(object):
 
-    def __init__(self, session, basepath, name, methods):
+    def __init__(self, session, basepath, me, name, methods):
         self.s = session
         self._path = basepath + '/' + name
+        self.me = me
         self._comment_path = basepath + '/comments/' + name
         self.name = name
         self.methods = methods
@@ -93,9 +108,10 @@ class ResourceBase(object):
 
         return self.s.prepare_request(Request(self.method_dict[method]['method'], url, json=data))
 
-    def _parse_response(self, response, comment):
-        print(json.dumps(response, indent=2))
-        if comment:
+    def _parse_response(self, response, comment=False, schema=None):
+        if schema:
+            return schema.parse_obj(response)
+        elif comment:
             return self.comment_schema.parse_obj(response)
         elif self.schema:
             return self.schema.parse_obj(response)
@@ -103,19 +119,19 @@ class ResourceBase(object):
             return response
 
 
-    def make_request(self, method, path, data=None, comment=False):
+    def make_request(self, method, path, data=None, comment=False, schema=None):
         r = self._prep_request(method, path, comment, data)
         resp = self.s.send(r)
 
-        assert resp.status_code == 200, 'Something went wrong calling the server'
-
         response_payload = resp.json()
-        assert response_payload['success'] == True, 'Something went wrong with the server... :('
-        
+        print(json.dumps(response_payload, indent=2))
+
+        assert response_payload['success'] == True, json.dumps(response_payload)
+        # print(response_payload)
         if 'resources' in response_payload:
-            return [self._parse_response(resource, comment) for resource in response_payload['resources']]
+            return [self._parse_response(resource, comment, schema) for resource in response_payload['resources']]
         elif 'resource' in response_payload:
-            return self._parse_response(response_payload['resource'], comment)
+            return self._parse_response(response_payload['resource'], comment, schema)
         else:
             return response_payload # Not sure what to do in this scenario or when it might occur
 
@@ -123,6 +139,16 @@ class ResourceBase(object):
         return self.make_request('list', '/')
 
     def create(self, data):
+        # if 'canRead' in data:
+        #     data['canRead'].append(self.me['_id'])
+        # else:
+        #     data['canRead'] = [self.me['_id']]
+
+        # if 'canWrite' in data:
+        #     data['canWrite'].append(self.me['_id'])
+        # else:
+        #     data['canWrite'] = [self.me['_id']]
+
         return self.make_request('create', '/', data)
 
     def get(self, id):
@@ -130,6 +156,9 @@ class ResourceBase(object):
 
     def update(self, id, data):
         return self.make_request('update', '/' + id, data)
+
+    def delete(self, id):
+        return self.make_request('delete', '/' + id)
 
     def comment_get(self, id):
         return self.make_request('comment_get', '/' + id, comment=True)

@@ -6,7 +6,7 @@ from typing import List, Optional
 from speckle.base.resource import ResourceBase, ResourceBaseSchema
 
 NAME = 'objects'
-METHODS = ['list', 'create', 'get', 'update',
+METHODS = ['list', 'get', 'update',
            'delete', 'comment_get', 'comment_create']
 
 
@@ -35,8 +35,8 @@ class SpeckleObject(ResourceBaseSchema):
 
 
 class Resource(ResourceBase):
-    def __init__(self, session, basepath):
-        super().__init__(session, basepath, NAME, METHODS)
+    def __init__(self, session, basepath, me):
+        super().__init__(session, basepath, me, NAME, METHODS)
 
         self.method_dict.update({
             'get_bulk': {
