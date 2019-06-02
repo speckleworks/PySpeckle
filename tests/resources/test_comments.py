@@ -29,7 +29,7 @@ def created_item(client, resource):
 def test_list(client, resource, created_item):
     # By this stage we should have created a bunch of comments
     initial_count = client.comments.list()
-    assert len(initial_count) > 1
+    assert len(initial_count) >= 1
 
 
 @pytest.mark.dependency()

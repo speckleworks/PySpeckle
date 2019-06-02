@@ -119,7 +119,7 @@ def test_get_profile(host, transfer_protocol, account):
     assert profile['surname'] == account['surname']
     assert profile['company'] == account['company']
     assert profile['private'] == True
-    assert profile['role'] == 'user'
+    assert profile['role'] == 'admin'
     assert profile['_id'] is not None
 
 
@@ -140,7 +140,7 @@ def test_update_profile(host, transfer_protocol, account, new_profile_payload):
     assert profile['surname'] == new_profile_payload['surname']
     assert profile['company'] == new_profile_payload['company']
 
-    assert profile['role'] == 'user'
+    assert profile['role'] == 'admin'
     assert profile['role'] != new_profile_payload['role']
 
 
