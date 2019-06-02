@@ -22,4 +22,6 @@ install:
 
 script:
   - docker-compose up -d
+  # Wait 10s to make sure docker-compose has properly spun up speckle server
+  - sleep 10s
   - python -m pytest --cov=speckle tests/ 
