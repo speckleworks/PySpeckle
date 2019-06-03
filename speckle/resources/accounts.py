@@ -4,23 +4,25 @@ from speckle.base.resource import ResourceBase
 
 
 NAME = 'accounts'
-METHODS = ['get', 'delete']
+METHODS = ['get', 'get_profile', 'update_profile', 'set_role', 'search']
 
 
-class UserSearch(BaseModel):
-    name: Optional[str] = None
-    surname: Optional[str] = None
-    company: Optional[str] = None
+class User(BaseModel):
+    id: Optional[str]
+    name: Optional[str]
+    surname: Optional[str]
+    company: Optional[str]
+    avatar: Optional[str]
+    role: Optional[str]
 
-class User(UserSearch):
-    avatar: Optional[str] = None
-
-class Role(BaseModel):
-    role: str
+    class Config:
+        fields = {'id': '_id'}
 
 class Resource(ResourceBase):
-    def __init__(self, session, basepath):
-        super().__init__(session, basepath, NAME, METHODS)
+    def __init__(self, session, basepath, me):
+        super().__init__(session, basepath, me, NAME, METHODS)
+
+        # self.schema = User
 
         self.method_dict.update({
             'get_profile': {
@@ -43,7 +45,8 @@ class Resource(ResourceBase):
     def update_profile(self, data):
         return self.make_request('update_profile', '/', data)
 
-    def set_role(self, id, data):
+    def set_role(self, id, role):
+        data = {'role': role}
         return self.make_request('set_role', '/' + id, data)
 
     def search(self, data):

@@ -1,8 +1,9 @@
 import uuid
 from speckle.base.resource import ResourceBase
 from pydantic import BaseModel, UUID4, validator
-from typing import List, Optional
+from typing import List, Optional, Union
 from speckle.base.resource import ResourceBase, ResourceBaseSchema
+from speckle.resources.accounts import User
 from enum import Enum
 
 NAME = 'clients'
@@ -11,26 +12,28 @@ METHODS = ['list', 'create', 'get', 'update',
 
 
 class RoleEnum(str, Enum):
-    Receiver: 'Receiver'
-    Sender: 'Sender'
-    Hybrid: 'Hybrid'
+    receiver: 'Receiver'
+    sender: 'Sender'
+    hybrid: 'Hybrid'
 
 
-class Client(ResourceBaseSchema):
-    role: Optional[RoleEnum]
+class ApiClient(ResourceBaseSchema):
+    # role: Optional[RoleEnum] = RoleEnum.receiver
+    role: Optional[str]
     documentName: Optional[str]
     documentType: Optional[str]
     documentLocation: Optional[str]
-    documentGuid: Optional[UUID4]
+    documentGuid: Optional[str]
     streamId: Optional[str]
     online: Optional[bool]
+    owner: Optional[Union[User, str]]
 
     @validator('documentGuid', pre=True, always=True)
     def set_guid(cls, v):
-        return v or uuid.uuid4()
+        return v or str(uuid.uuid4())
 
 class Resource(ResourceBase):
-    def __init__(self, session, basepath):
-        super().__init__(session, basepath, NAME, METHODS)
+    def __init__(self, session, basepath, me):
+        super().__init__(session, basepath, me, NAME, METHODS)
 
-        self.schema = Client
+        self.schema = ApiClient
