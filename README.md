@@ -1,6 +1,8 @@
 # PySpeckle
 A Python Speckle Client
 
+[![Build Status](https://travis-ci.com/speckleworks/PySpeckle.svg?branch=master)](https://travis-ci.com/speckleworks/PySpeckle)
+
 [Speckle.Works](https://www.speckle.works)
 
 > Speckle: open digital infrastructure for designing, making and operating the built environment.
