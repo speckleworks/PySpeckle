@@ -47,8 +47,6 @@ class Stream(ResourceBaseSchema):
     parent: Optional[str]
     children: List[str] = []
 
-
-
 class Resource(ResourceBase):
     def __init__(self, session, basepath, me):
         super().__init__(session, basepath, me, NAME, METHODS)
