@@ -5,7 +5,8 @@
 
 Welcome to PySpeckle's documentation!
 =====================================
-.. mdinclude:: ../README.md
+
+.. mdinclude:: ../../README.md
 
 .. toctree::
    :maxdepth: 2
