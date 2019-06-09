@@ -48,6 +48,10 @@ class Stream(ResourceBaseSchema):
     children: List[str] = []
 
 class Resource(ResourceBase):
+    """API Access class for Streams
+
+    """
+    
     def __init__(self, session, basepath, me):
         super().__init__(session, basepath, me, NAME, METHODS)
 
@@ -68,21 +72,130 @@ class Resource(ResourceBase):
 
         self.schema = Stream
 
+    def list(self):
+        """List all streams
+        
+        Returns:
+            list -- A list of Streams, without objects attached
+        """
+        return self.make_request('list', '?omit=objects')
+
+    def create(self, data):
+        """Create a stream from a data dictionary
+        
+        Arguments:
+            data {dict} -- A dictionary describing a stream
+        
+        Returns:
+            Stream -- The instance created on the Speckle Server
+        """
+        return self.make_request('create', '/', data)
+
+    def get(self, id):
+        """Get a specific stream from the SpeckleServer
+        
+        Arguments:
+            id {str} -- The StreamId of the stream to retrieve
+        
+        Returns:
+            Stream -- The stream
+        """
+        return self.make_request('get', '/' + id)
+
+    def update(self, id, data):
+        """Update a specific stream
+        
+        Arguments:
+            id {str} -- The StreamId of the stream to update
+            data {dict} -- A dict of values to update
+        
+        Returns:
+            dict -- a confirmation payload with the updated keys
+        """
+        return self.make_request('update', '/' + id, data)
+
+    def delete(self, id):
+        """Delete a specific stream
+        
+        Arguments:
+            id {str} -- The StreamId of the stream to delete
+        
+        Returns:
+            dict -- A confirmation payload
+        """
+        return self.make_request('delete', '/' + id)
+
+    def comment_get(self, id):
+        """Retrieve comments attached to a stream
+        
+        Arguments:
+            id {str} -- The StreamId of the stream to retrieve comments from
+        
+        Returns:
+            list -- A list of comments
+        """
+        return self.make_request('comment_get', '/' + id, comment=True)
+
+    def comment_create(self, id, data):
+        """Add a comment to a stream
+        
+        Arguments:
+            id {str} -- The StreamId of the stream to comment on
+            data {dict} -- A comment dictionary object
+        
+        Returns:
+            CommentSchema -- The comment created by the server
+        """
+        return self.make_request('comment_create', '/' + id, data, comment=True)
+
 
     def clone(self, id, name=None):
+        """Clone a stream
+        
+        Arguments:
+            id {str} -- The StreamId of the stream to clone
+        
+        Keyword Arguments:
+            name {str} -- The name of the new cloned stream. eg: stream-x-2019-06-09-backup (default: {None})
+        
+        Returns:
+            tuple -- The clone and parent stream as dicts
+        """
         response = self.make_request('clone', '/' + id + '/clone', {'name': name})
         clone = self._parse_response(response['clone'])
         parent = self._parse_response(response['parent'])
         return clone, parent
 
     def diff(self, id, other_id):
+        """Runs a diff on two streams
+        
+        Arguments:
+            id {str} -- StreamId of the main stream
+            other_id {str} -- StreamId of the stream to compare
+        
+        Returns:
+            dict -- A response payload with objects and layers as keys
+        """
         return self.make_request('diff', '/' + id + '/diff/' + other_id)
 
     def list_objects(self, id):
+        """Return the list of objects in a stream
+        
+        Arguments:
+            id {str} -- StreamId of the stream to list objects from
+        
+        Returns:
+            list -- A list of Speckle objects
+        """
         return self.make_request('list_objects', '/' + id + '/objects', schema=SpeckleObject)
 
     def list_clients(self, id):
+        """Return the list of api clients connected to the stream
+        
+        Arguments:
+            id {str} -- StreamId of the stream to list objects from
+        
+        Returns:
+            list -- A list of API clients
+        """
         return self.make_request('list_clients', '/' + id + '/clients', schema=ApiClient)
-
-    def list(self):
-        return self.make_request('list', '?omit=objects')  
