@@ -25,12 +25,3 @@ script:
   # Wait 10s to make sure docker-compose has properly spun up speckle server
   - sleep 10s
   - python -m pytest --cov=speckle tests/ 
-  
-deploy:
-  provider: pages
-  skip_cleanup: true
-  github-token: $GH_TOKEN
-  keep-history: false
-  local_dir: docs/_build/
-  on:
-    branch: master
