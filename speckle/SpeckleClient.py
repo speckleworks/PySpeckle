@@ -1,4 +1,3 @@
-
 import requests, json, os
 import sqlite3, contextlib
 import struct, base64

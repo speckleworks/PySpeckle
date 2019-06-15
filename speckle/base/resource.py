@@ -134,34 +134,3 @@ class ResourceBase(object):
             return self._parse_response(response_payload['resource'], comment, schema)
         else:
             return response_payload # Not sure what to do in this scenario or when it might occur
-
-    def list(self):
-        return self.make_request('list', '/')
-
-    def create(self, data):
-        # if 'canRead' in data:
-        #     data['canRead'].append(self.me['_id'])
-        # else:
-        #     data['canRead'] = [self.me['_id']]
-
-        # if 'canWrite' in data:
-        #     data['canWrite'].append(self.me['_id'])
-        # else:
-        #     data['canWrite'] = [self.me['_id']]
-
-        return self.make_request('create', '/', data)
-
-    def get(self, id):
-        return self.make_request('get', '/' + id)
-
-    def update(self, id, data):
-        return self.make_request('update', '/' + id, data)
-
-    def delete(self, id):
-        return self.make_request('delete', '/' + id)
-
-    def comment_get(self, id):
-        return self.make_request('comment_get', '/' + id, comment=True)
-
-    def comment_create(self, id, data):
-        return self.make_request('comment_create', '/' + id, data, comment=True)

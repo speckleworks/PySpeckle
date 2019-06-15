@@ -77,8 +77,8 @@ def test_list(host, transfer_protocol, account):
     client.login(email=account['email'], password=account['password'])
     try:
         client.accounts.list()
-    except AssertionError as e:
-        assert str(e) == 'method list not supported for accounts calls'
+    except AttributeError as e:
+        assert str(e) == "'Resource' object has no attribute 'list'"
 
 
 @pytest.mark.dependency(depends=['test_login'])
@@ -87,8 +87,8 @@ def test_create(host, transfer_protocol, account):
     client.login(email=account['email'], password=account['password'])
     try:
         client.accounts.create(data=account)
-    except AssertionError as e:
-        assert str(e) == 'method create not supported for accounts calls'
+    except AttributeError as e:
+        assert str(e) == "'Resource' object has no attribute 'create'"
 
 
 @pytest.mark.dependency(depends=['test_login'])
@@ -97,8 +97,8 @@ def test_delete(host, transfer_protocol, account):
     client.login(email=account['email'], password=account['password'])
     try:
         client.accounts.delete(id='some-made-up-id')
-    except AssertionError as e:
-        assert str(e) == 'method delete not supported for accounts calls'
+    except AttributeError as e:
+        assert str(e) == "'Resource' object has no attribute 'delete'"
 
 
 def test_get(client, created_item):
