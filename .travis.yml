@@ -10,18 +10,29 @@ env:
   global:
     - DOCKER_COMPOSE_VERSION=1.24.0
 
-before_install:
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
-
 install:
   - pip install -r requirements.txt
-  - pip install pytest pytest-cov
+  - pip install -r dev-requirements.txt
 
-script:
-  - docker-compose up -d
-  # Wait 10s to make sure docker-compose has properly spun up speckle server
-  - sleep 10s
-  - python -m pytest --cov=speckle tests/ 
+jobs:
+  include:
+  - stage: test
+    before_install:
+      - sudo rm /usr/local/bin/docker-compose
+      - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+      - chmod +x docker-compose
+      - sudo mv docker-compose /usr/local/bin
+    script:
+      - docker-compose up -d
+      # Wait 10s to make sure docker-compose has properly spun up speckle server
+      - sleep 10s
+      - python -m pytest --cov=speckle tests/ 
+  - stage: deploy
+    if: branch = master AND (NOT type IN (pull_request))
+    before_install:
+      - npm i -g npm@6.6.0
+      - npm install @semantic-release/exec
+    script:
+      - git config --global user.email "releases@speckleworks.com"
+      - git config --global user.name "specklebot"
+      - npx semantic-release
