@@ -8,11 +8,6 @@ A Python Speckle Client
 > Speckle: open digital infrastructure for designing, making and operating the built environment.
 > We reimagine the design process from the Internet up: Speckle is an open source (MIT) initiative for developing an extensible Design & AEC data communication and collaboration platform.
 
-## Updates
-
-### January 15, 2019
-
-Pip distribution updated to version 0.2.5. Remember to `pip install speckle --upgrade` to stay up-to-date.
 
 ## Installation
 PySpeckle can be installed through `pip`:
@@ -27,5 +22,35 @@ PySpeckle is a light Python wrapper / interface for the Speckle framework. It ca
 
 At the moment, it copies the same method names from the .NET `SpeckleApiClient`, for consistency's sake. Although the functions are mostly labelled 'Async', they are not yet. This could eventually be implemented with `requests_futures` or `grequests` or similar.
 
-## Notes
-SpeckleBlender is written and maintained by [Tom Svilans](http://tomsvilans.com) ([Github](https://github.com/tsvilans)).
+## Quick Start
+Here is how you initialise a client, authenticate and start speckling:
+```python
+from speckle import SpeckleApiClient
+
+client = SpeckleApiClient('hestia.speckle.works')
+
+client.login(
+    email='test@test.com',
+    password='Speckle<3Python'
+)
+
+stream_id = 'HjenwS2s'
+
+objects = client.streams.list_objects(stream_id)
+
+for object in objects:
+  print(object.dict())
+```
+
+Usage documentation can be found [here](https://pyspeckle.readthedocs.io/en/latest/).
+
+
+
+## Maintainers
+SpeckleBlender is written and maintained by [Tom Svilans](http://tomsvilans.com) ([Github](https://github.com/tsvilans)), [Izzy Lyseggen](https://github.com/izzylys) and [Antoine Dao](https://github.com/antoinedao).
+
+## Updates
+
+### January 15, 2019
+
+Pip distribution updated to version 0.2.5. Remember to `pip install speckle --upgrade` to stay up-to-date.
