@@ -1,38 +1,35 @@
 language: python
-
 python:
-  - '3.6'
-
+- '3.6'
 services:
-  - docker
-
-env: 
+- docker
+env:
   global:
-    - DOCKER_COMPOSE_VERSION=1.24.0
-
+  - DOCKER_COMPOSE_VERSION=1.24.0
+  - PYPI_USERNAME=botsalot
+  - secure: fuF5Rvlcp4LbGK3POvDNNW4FSTnY+maMth4EkZDZDlrECYBkcCayViwsmUESwWJuyBA6Dizu7SLKCROyG7wzqmowIZKG+rNbK3dRggO9r7Rn3dCY1rB1rNRMMwaoDDhz/FFXTHBSUpHDD9Zq5+1AtlM2mb0pPYf+KKvVUb0bn4kqdkZrRfaFBAtRwiOZ3Ws7ySgf6dHsXfMvBGIwA63YIDa6xsJmu04EACRS9rHMELf8BG0PsEi54KrhWZF2+QhDY0uAfdcF11CgD6aGm/n1OohsqDNbn2aCT2DFaHi954eypmyWiSvda3BVBTlW8OL5kwQZxVvOCwD/h/BKkHVtNMhLLsvdTm9lec3D8+LYCvpzGfBAgFvH6F9txSmA6nt5/4TVh0YlB+NKaSPwWNJ6RomvZQ2rI6U1DrhsT9ZDhd2qxOlGRDI6NsjW9f/4AGy38J3cDAs4DRgSOypONpNvWG8OIHIYASWodcwbcESPncouEo5amGoqIa3x+irYUj3HjpdpmGQJI+bW1vMuh2/zUIJkVjY7ANnTAyWmmohCgv8KpYwJotsFZmoZPtkvLTXlaEa0t4FOMmWzzv99o7dNKSjrDSqQFYtlIyBtiYxgghRPiOH4WwuBNkcTTOB21I+L8pTG16ys1/DUIauaYuuRsmHngpIXyXlU7B4d7b1I7KA=
 install:
-  - pip install -r requirements.txt
-  - pip install -r dev-requirements.txt
-
+- pip install -r requirements.txt
+- pip install -r dev-requirements.txt
 jobs:
   include:
   - stage: test
     before_install:
-      - sudo rm /usr/local/bin/docker-compose
-      - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-      - chmod +x docker-compose
-      - sudo mv docker-compose /usr/local/bin
+    - sudo rm /usr/local/bin/docker-compose
+    - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname
+      -s`-`uname -m` > docker-compose
+    - chmod +x docker-compose
+    - sudo mv docker-compose /usr/local/bin
     script:
-      - docker-compose up -d
-      # Wait 10s to make sure docker-compose has properly spun up speckle server
-      - sleep 10s
-      - python -m pytest --cov=speckle tests/ 
+    - docker-compose up -d
+    - sleep 10s
+    - python -m pytest --cov=speckle tests/
   - stage: deploy
     if: branch = master AND (NOT type IN (pull_request))
     before_install:
-      - npm i -g npm@6.6.0
-      - npm install @semantic-release/exec
+    - npm i -g npm@6.6.0
+    - npm install @semantic-release/exec
     script:
-      - git config --global user.email "releases@speckleworks.com"
-      - git config --global user.name "specklebot"
-      - npx semantic-release
+    - git config --global user.email "devops@speckle.works"
+    - git config --global user.name "botsalot"
+    - npx semantic-release
