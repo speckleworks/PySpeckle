@@ -13,6 +13,7 @@ setuptools.setup(
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
     author="Speckle Works",
+    author_email="devops@speckle.works",
     description="A Python client for Speckle servers.",
     long_description=long_description,
     long_description_content_type="text/markdown",
