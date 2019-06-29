@@ -17,7 +17,7 @@ setuptools.setup(
     description="A Python client for Speckle servers.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/specklworks.pyspeckle",
+    url="https://github.com/specklworks/pyspeckle",
     packages=setuptools.find_packages(exclude=["tests"]),
     install_requires=required,
     classifiers=[
