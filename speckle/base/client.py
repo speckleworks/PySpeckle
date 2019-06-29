@@ -26,7 +26,8 @@ For more detailed documentation on the inidividual resources available go  :doc:
 
 import requests
 from speckle import resources
-
+from websocket import WebSocketApp
+import urllib
 
 class ClientBase():
     """Base class for http speckle client
@@ -38,11 +39,19 @@ class ClientBase():
     
     DEFAULT_HOST = 'hestia.speckle.works'
     DEFAULT_VERSION = 'v1'
-    TRANSFER_PROTOCOL = 'https'
+    USE_SSL = True
 
+    def __init__(self, host=DEFAULT_HOST, version=DEFAULT_VERSION, use_ssl=USE_SSL):
 
-    def __init__(self, host=DEFAULT_HOST, version=DEFAULT_VERSION, transfer_protocol=TRANSFER_PROTOCOL):
-        self.server = '{}://{}/api/{}'.format(transfer_protocol, host, version)
+        ws_protocol = 'ws'
+        http_protocol = 'http'
+
+        if use_ssl:
+            ws_protocol = 'wss'
+            http_protocol = 'https'
+
+        self.websockets_server = '{}://{}'.format(ws_protocol, host)
+        self.server = '{}://{}/api/{}'.format(http_protocol, host, version)
         self.me = None
         self.s = requests.Session()
         self.verbose = False
@@ -107,14 +116,130 @@ class ClientBase():
             'Authorization': self.me['token'],
         })
 
-    
+    def webscokets(self, stream_id, client_id=None, header=None,
+                   on_open=None, on_message=None, on_error=None,
+                   on_close=None, on_ping=None, on_pong=None,
+                   on_cont_message=None, get_mask_key=None,
+                   subprotocols=None, on_data=None):
+        """Connect to a specific stream on the host server through websockets
+        
+        This function essentially generates the correct connection url the Speckle Server
+        expects in order to connect to a specific stream. After that all this function does
+        is instantiate a WebScoketApp class from the `websocket-client <https://github.com/websocket-client/websocket-client>`_
+        package.
+
+        Arguments:
+            stream_id {str} -- The id of a stream (stream.streamId)
+        
+        Keyword Arguments:
+            client_id {str} -- The id of the client to authenticate as (default: {None})
+            header {dict} -- custom header for websocket handshake (default: {None})
+            on_open {function} -- callable object which is called at opening websocket. (default: {None})
+                This function takes 1 argument:
+                1. this class object
+            on_close {function} -- callable object which is called when closed the connection (default: {None})
+                This function takes 1 argument:
+                1. this class object
+            on_message {function} -- callable object which is called when receiving data (default: {None})
+                This function takes 2 arguments:
+                1. this class object
+                2. the utf-8 string sent by the server
+            on_error {function} -- callable object which is called when an error is sent by the server (default: {None})
+                This function takes 2 arguments:
+                1. this class object
+                2. an exception object
+            on_ping {function} -- callable object which is called when the server pings (default: {None})
+                This function takes 2 arguments:
+                1. this class object
+                2. the utf-8 string sent by the server
+            on_pong {function} -- callable object which is called when the server pings (default: {None})
+                This function takes 2 arguments:
+                1. this class object
+                2. the utf-8 string sent by the server
+            on_cont_message {function} -- callback object which is called when receive continued frame data. (default: {None})
+                This function takes 2 arguments:
+                1. this class object
+                2. the utf-8 string sent by the server
+                3. is continue flag, if 0 the data continues to the next frame
+            on_data {function} -- callback object which is called when a message received (default: {None})
+                This is called before on_message or on_cont_message,
+                and then on_message or on_cont_message is called.
+                on_data has 4 argument.
+                1. this class object.
+                2. the utf-8 string sent by the server
+                3. data type. ABNF.OPCODE_TEXT or ABNF.OPCODE_BINARY will be same.
+                4. continue flag. if 0, the data continue
+            get_mask_key {function} -- a callable to produce new mask keys (default: {None})
+                see the WebSocket.set_mask_key's docstring for more information
+            subprotocols {list} -- list of available sub protocols (default: {None})
+        
+        Returns:
+            WebSocketApp -- a websocket-client instance
+
+
+        Example:
+            T
+            .. code-block:: python
+
+                from speckle import SpeckleApiClient
+
+                host = 'hestia.speckle.works'
+                stream_id = 'MawOwhxET'
+
+                client = SpeckleApiClient(host=host)
+                client.login('test@test.com', 'testestestest')
+
+                def print_message(ws, message):
+                    print(message)
+
+
+                ws = client.websockets(stream_id, on_message=print_message)
+
+                # Send a message to the stream
+                ws.send('Hi Speckle!!!')
+
+                # Start a listening server that will print what ever message
+                # is sent to it (due to the print_message function defined above)
+                ws.run_forever()
+        """
+        
+        if not client_id:
+            api_client = self.api_clients.create({
+                'streamId': stream_id
+            })
+
+            client_id = api_client.id
+
+        params = {
+            'client_id': client_id,
+            'access_token': self.me['token'],
+            'stream_id': stream_id
+        }
+
+        url = '{}?{}'.format(
+            self.websockets_server,
+            urllib.parse.urlencode(params)
+        )
+        return WebSocketApp(
+            url,
+            header,
+            on_open,
+            on_message,
+            on_error,
+            on_close,
+            on_ping,
+            on_pong,
+            on_cont_message,
+            get_mask_key,
+            subprotocols,
+            on_data,
+        )
+
 
     def __getattr__(self, name):
         try:
             attr = getattr(resources, name)
-            # setattr(self, name, attr.Resource(self.s, self.server))
             return attr.Resource(self.s, self.server, self.me)
-            # return getattr(self, name)
         except:
             raise 'Method {} is not supported by SpeckleClient class'.format(name)
 
