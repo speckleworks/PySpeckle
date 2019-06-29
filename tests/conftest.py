@@ -7,8 +7,8 @@ def host():
     return 'localhost:3000'
 
 @pytest.fixture(scope='session')
-def transfer_protocol():
-    return 'http'
+def use_ssl():
+    return False
 
 @pytest.fixture(scope='session')
 def admin_account():
@@ -21,8 +21,8 @@ def admin_account():
     }
 
 @pytest.fixture(scope='session')
-def client(host, transfer_protocol, admin_account):
-    client = SpeckleApiClient(host=host, transfer_protocol=transfer_protocol)
+def client(host, use_ssl, admin_account):
+    client = SpeckleApiClient(host=host, use_ssl=use_ssl)
     try:
         client.register(**admin_account)
     except AssertionError as e:
@@ -35,9 +35,9 @@ def client(host, transfer_protocol, admin_account):
 
 
 @pytest.fixture(scope='module')
-def user_account(host, transfer_protocol, admin_account):
+def user_account(host, use_ssl, admin_account):
     client = SpeckleApiClient(
-            host=host, transfer_protocol=transfer_protocol)
+            host=host, use_ssl=use_ssl)
 
     account = {
         'name': 'Test_1',

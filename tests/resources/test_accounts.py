@@ -28,9 +28,9 @@ def new_profile_payload():
 
 
 @pytest.fixture(scope='module')
-def created_item(host, transfer_protocol):
+def created_item(host, use_ssl):
     client = SpeckleApiClient(
-            host=host, transfer_protocol=transfer_protocol)
+            host=host, use_ssl=use_ssl)
     account = {
         'name': 'Test_1',
         'surname': 'McTestyFace_1',
@@ -43,17 +43,17 @@ def created_item(host, transfer_protocol):
     return client.me
 
 @pytest.fixture
-def get_user(host, transfer_protocol, created_item):
+def get_user(host, use_ssl, created_item):
     def get_me():
         client = SpeckleApiClient(
-            host=host, transfer_protocol=transfer_protocol)
+            host=host, use_ssl=use_ssl)
         client.login(email=created_item['email'], password='supersecretpassword')
         return client.me
     return get_me
 
 
-def test_register(host, transfer_protocol, account):
-    test_client = SpeckleApiClient(host=host, transfer_protocol=transfer_protocol)
+def test_register(host, use_ssl, account):
+    test_client = SpeckleApiClient(host=host, use_ssl=use_ssl)
     assert test_client.me == None
     test_client.register(**account)
     assert test_client.me['email'] == account['email']
@@ -62,8 +62,8 @@ def test_register(host, transfer_protocol, account):
 
 
 @pytest.mark.dependency(depends=['test_register'])
-def test_login(host, transfer_protocol, account):
-    client = SpeckleApiClient(host=host, transfer_protocol=transfer_protocol)
+def test_login(host, use_ssl, account):
+    client = SpeckleApiClient(host=host, use_ssl=use_ssl)
     assert client.me == None
     client.login(email=account['email'], password=account['password'])
     assert client.me['email'] == account['email']
@@ -72,8 +72,8 @@ def test_login(host, transfer_protocol, account):
 
 
 @pytest.mark.dependency(depends=['test_login'])
-def test_list(host, transfer_protocol, account):
-    client = SpeckleApiClient(host=host, transfer_protocol=transfer_protocol)
+def test_list(host, use_ssl, account):
+    client = SpeckleApiClient(host=host, use_ssl=use_ssl)
     client.login(email=account['email'], password=account['password'])
     try:
         client.accounts.list()
@@ -82,8 +82,8 @@ def test_list(host, transfer_protocol, account):
 
 
 @pytest.mark.dependency(depends=['test_login'])
-def test_create(host, transfer_protocol, account):
-    client = SpeckleApiClient(host=host, transfer_protocol=transfer_protocol)
+def test_create(host, use_ssl, account):
+    client = SpeckleApiClient(host=host, use_ssl=use_ssl)
     client.login(email=account['email'], password=account['password'])
     try:
         client.accounts.create(data=account)
@@ -92,8 +92,8 @@ def test_create(host, transfer_protocol, account):
 
 
 @pytest.mark.dependency(depends=['test_login'])
-def test_delete(host, transfer_protocol, account):
-    client = SpeckleApiClient(host=host, transfer_protocol=transfer_protocol)
+def test_delete(host, use_ssl, account):
+    client = SpeckleApiClient(host=host, use_ssl=use_ssl)
     client.login(email=account['email'], password=account['password'])
     try:
         client.accounts.delete(id='some-made-up-id')
@@ -108,8 +108,8 @@ def test_get(client, created_item):
 
 
 @pytest.mark.dependency(depends=['test_login'])
-def test_get_profile(host, transfer_protocol, account):
-    client = SpeckleApiClient(host=host, transfer_protocol=transfer_protocol)
+def test_get_profile(host, use_ssl, account):
+    client = SpeckleApiClient(host=host, use_ssl=use_ssl)
     assert client.me == None
     client.login(email=account['email'], password=account['password'])
     profile = client.accounts.get_profile()
@@ -124,8 +124,8 @@ def test_get_profile(host, transfer_protocol, account):
 
 
 @pytest.mark.dependency(depends=['test_get_profile'])
-def test_update_profile(host, transfer_protocol, account, new_profile_payload):
-    client = SpeckleApiClient(host=host, transfer_protocol=transfer_protocol)
+def test_update_profile(host, use_ssl, account, new_profile_payload):
+    client = SpeckleApiClient(host=host, use_ssl=use_ssl)
     assert client.me == None
     client.login(email=account['email'], password=account['password'])
     
