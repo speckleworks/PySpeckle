@@ -178,7 +178,6 @@ class ClientBase():
 
 
         Example:
-            T
             .. code-block:: python
 
                 from speckle import SpeckleApiClient
