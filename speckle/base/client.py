@@ -108,6 +108,8 @@ class ClientBase():
             })
 
         response = r.json()
+        if self.verbose:
+            print(response)
         assert response['success'], response['message']
         
         self.me = r.json()['resource']
