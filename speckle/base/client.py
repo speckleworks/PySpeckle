@@ -41,7 +41,7 @@ class ClientBase():
     DEFAULT_VERSION = 'v1'
     USE_SSL = True
 
-    def __init__(self, host=DEFAULT_HOST, version=DEFAULT_VERSION, use_ssl=USE_SSL):
+    def __init__(self, host=DEFAULT_HOST, version=DEFAULT_VERSION, use_ssl=USE_SSL, verbose=False):
 
         ws_protocol = 'ws'
         http_protocol = 'http'
@@ -54,7 +54,7 @@ class ClientBase():
         self.server = '{}://{}/api/{}'.format(http_protocol, host, version)
         self.me = None
         self.s = requests.Session()
-        self.verbose = False
+        self.verbose = verbose
 
 
     def register(self, email, password, company, name=None, surname=None):
