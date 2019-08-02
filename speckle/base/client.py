@@ -116,7 +116,7 @@ class ClientBase():
             'Authorization': self.me['token'],
         })
 
-    def webscokets(self, stream_id, client_id=None, header=None,
+    def websockets(self, stream_id, client_id=None, header=None,
                    on_open=None, on_message=None, on_error=None,
                    on_close=None, on_ping=None, on_pong=None,
                    on_cont_message=None, get_mask_key=None,
