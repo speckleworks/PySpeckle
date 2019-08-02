@@ -41,7 +41,7 @@ class ClientBase():
     DEFAULT_VERSION = 'v1'
     USE_SSL = True
 
-    def __init__(self, host=DEFAULT_HOST, version=DEFAULT_VERSION, use_ssl=USE_SSL):
+    def __init__(self, host=DEFAULT_HOST, version=DEFAULT_VERSION, use_ssl=USE_SSL, verbose=False):
 
         ws_protocol = 'ws'
         http_protocol = 'http'
@@ -54,7 +54,7 @@ class ClientBase():
         self.server = '{}://{}/api/{}'.format(http_protocol, host, version)
         self.me = None
         self.s = requests.Session()
-        self.verbose = False
+        self.verbose = verbose
 
 
     def register(self, email, password, company, name=None, surname=None):
@@ -108,6 +108,8 @@ class ClientBase():
             })
 
         response = r.json()
+        if self.verbose:
+            print(response)
         assert response['success'], response['message']
         
         self.me = r.json()['resource']
@@ -116,7 +118,7 @@ class ClientBase():
             'Authorization': self.me['token'],
         })
 
-    def webscokets(self, stream_id, client_id=None, header=None,
+    def websockets(self, stream_id, client_id=None, header=None,
                    on_open=None, on_message=None, on_error=None,
                    on_close=None, on_ping=None, on_pong=None,
                    on_cont_message=None, get_mask_key=None,
