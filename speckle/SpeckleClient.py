@@ -2,6 +2,7 @@ import requests, json, os
 import sqlite3, contextlib
 import struct, base64
 from speckle.base.client import ClientBase
+import speckle.objects
 
 def jdumps(msg):
     return json.dumps(msg, indent=4, sort_keys=True)

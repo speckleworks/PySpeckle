@@ -1,6 +1,7 @@
 import json
 from requests import Request
 from pydantic import BaseModel
+from pydoc import locate
 from typing import List, Optional
 import dataclasses
 from dataclasses import dataclass
@@ -106,6 +107,7 @@ class ResourceBase(object):
                     dataclass_instance = self.schema.parse_obj(data)
                     data = clean_empty(dataclass_instance.dict())
 
+
         return self.s.prepare_request(Request(self.method_dict[method]['method'], url, json=data))
 
     def _parse_response(self, response, comment=False, schema=None):
@@ -115,6 +117,8 @@ class ResourceBase(object):
             return self.comment_schema.parse_obj(response)
         elif self.schema:
             return self.schema.parse_obj(response)
+        elif 'type' in response and hasattr(locate("speckle.objects"), response["type"]):
+            return locate("speckle.objects.{}".format(response["type"])).parse_obj(response)            
         else:
             return response
 
@@ -124,7 +128,7 @@ class ResourceBase(object):
         resp = self.s.send(r)
 
         response_payload = resp.json()
-        print(json.dumps(response_payload, indent=2))
+        #print(json.dumps(response_payload, indent=2))
 
         assert response_payload['success'] == True, json.dumps(response_payload)
         # print(response_payload)
