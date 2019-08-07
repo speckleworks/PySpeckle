@@ -115,6 +115,19 @@ class SpeckleCache():
             except sqlite3.IntegrityError as e:
                 self.log("Account already exists in database.")
 
+    def delete_all(self, table="CachedObject"):
+        conn = self.try_connect()
+        if conn == None:
+            raise Exception("Failed to connect to database.")
+
+        with conn:
+            c = conn.cursor()
+            try:
+                c.execute(" DELETE FROM " + table)
+                conn.commit()
+            except sqlite3.IntegrityError as e:
+                self.log("Failed to clear table{}.".format(table))
+
     def get_all_accounts(self):
 
         conn = self.try_connect()
