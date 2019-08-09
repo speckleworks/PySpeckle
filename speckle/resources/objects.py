@@ -17,7 +17,7 @@ class SpeckleObject(ResourceBaseSchema):
     geometryHash: Optional[str]  # Is immediately replaced anyways
     hash: Optional[str]  # Is immediately replaced anyways
     applicationId: Optional[str]
-    properties: Optional[dict]
+    properties: dict = {}
     partOf: Optional[List[str]]
     parent: Optional[List[str]]
     children: Optional[List[str]]

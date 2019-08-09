@@ -34,6 +34,10 @@ class SpeckleApiClient(ClientBase):
             self.log(json.dumps(r.text, indent=4, sort_keys=True))            
         return False
 
+
+    '''
+    DEPRECATED
+
     def write_profile_to_file(self, profile, directory=None):
         assert ("email" in profile.keys())
         assert ("server" in profile.keys())
@@ -47,73 +51,6 @@ class SpeckleApiClient(ClientBase):
             with open(os.path.join(directory, profile['email']) + ".JWT .txt", 'w') as f:
                 f.write("{},{},{},{},{}\n".format(profile['email'], profile['apitoken'], profile['server_name'], profile['server'], profile['server']))
     
-    def write_profile_to_database(self, profile, filepath=None, create_if_none=True):
-        assert ("email" in profile.keys())
-        assert ("server" in profile.keys())
-        assert ("server_name" in profile.keys())
-        assert ("apitoken" in profile.keys())
-
-        #Sanitize inputs
-        profile["server"] = profile["server"].strip("/")
-        profile["server"] = profile["server"].strip("\\")
-        profile["email"] = profile["email"].strip()
-
-        if filepath == None:
-            filepath = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'SpeckleCache.db'))
-
-        if os.path.isfile(filepath):
-            try:
-                conn = sqlite3.connect(filepath)
-            except:
-                print ("Accessing database failed...")
-                return None
-
-            #with contextlib.closing(sqlite3.connect(filepath)) as con:
-            with conn:
-                c = conn.cursor()
-                try:
-                    c.execute(""" INSERT INTO Account(AccountId,ServerName,RestApi,Email,Token,IsDefault)
-                             VALUES(NULL,?,?,?,?,0) """, (profile['server_name'], profile['server'], profile['email'], profile['apitoken']))
-                    conn.commit()
-                except sqlite3.IntegrityError as e:
-                    print("Account already exists in database.")
-
-                return c.lastrowid
-
-        # If no database exists, create one
-        elif create_if_none:
-            try:
-                conn = sqlite3.connect(filepath)
-            except:
-                return None
-            with conn:
-                c = conn.cursor()
-                c.execute('''CREATE TABLE Account
-                             ([AccountId] integer NOT NULL PRIMARY KEY AUTOINCREMENT,[ServerName] varchar, [RestApi] varchar, [Email] varchar, [Token] varchar, [IsDefault] integer,
-                             UNIQUE(RestApi,Email))''')
-                conn.commit()
-                c.execute(""" INSERT INTO Account(AccountId,ServerName,RestApi,Email,Token,IsDefault)
-                             VALUES(NULL,?,?,?,?,0) """, (profile['server_name'], profile['server'], profile['email'], profile['apitoken']))
-                conn.commit()
-                return c.lastrowid
-
-
-    def load_local_profiles_from_database(self, filepath=None):
-        profiles = []
-        if filepath == None:
-            filepath = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'SpeckleCache.db'))
-
-        accounts = None
-        if os.path.isfile(filepath):
-            with contextlib.closing(sqlite3.connect(filepath)) as con:
-                c = con.cursor()
-                c.execute("SELECT * FROM Account")
-                accounts = c.fetchall()
-                #names = [x[0] for x in c.description]
-                for a in accounts:
-                    profiles.append({'server_name':a[1], 'server':a[2], 'email':a[3], 'apitoken':a[4]})
-        return profiles
-
 
     def load_local_profiles(self, directory=None):
         profiles = []
@@ -134,6 +71,7 @@ class SpeckleApiClient(ClientBase):
 
         return profiles
 
+
     def set_profile(self, server, apitoken):
         self.server = server
         self.s.headers.update({'Authorization': apitoken})
@@ -146,6 +84,7 @@ class SpeckleApiClient(ClientBase):
             self.s.headers.update({'Authorization': profiles[email]['apitoken']})
             return True
         return False
+    '''
 
     '''
     API calls

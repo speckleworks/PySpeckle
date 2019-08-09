@@ -1,6 +1,7 @@
 import uuid
 import pytest
 from speckle.SpeckleClient import SpeckleApiClient
+from speckle import SpeckleCache
 
 @pytest.fixture(scope='session')
 def host():
@@ -32,7 +33,6 @@ def client(host, use_ssl, admin_account):
             raise e
     
     return client
-
 
 @pytest.fixture(scope='module')
 def user_account(host, use_ssl, admin_account):
