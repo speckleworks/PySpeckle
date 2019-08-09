@@ -89,7 +89,7 @@ class ClientBase():
         self.login(email, password)
 
 
-    def login(self, email, password):
+    def login(self, email, password, apitoken=True):
         """Login user to speckle server
         
         After a user has logged in, this function will save auth token credentials
@@ -113,10 +113,16 @@ class ClientBase():
         assert response['success'], response['message']
         
         self.me = r.json()['resource']
-        self.s.headers.update({
-            'content-type': 'application/json',
-            'Authorization': self.me['token'],
-        })
+        if apitoken:
+            self.s.headers.update({
+                'content-type': 'application/json',
+                'Authorization': self.me['apitoken'],
+            })
+        else:
+            self.s.headers.update({
+                'content-type': 'application/json',
+                'Authorization': self.me['token'],
+            })
 
     def websockets(self, stream_id, client_id=None, header=None,
                    on_open=None, on_message=None, on_error=None,
