@@ -3,11 +3,44 @@ from urllib.request import pathname2url
 
 import os
 
-class SpeckleCache():
+"""Speckle Cache documentation
 
+The SpeckleCache class is used to manage user profiles and cached 
+objects and streams.
+
+Example:
+    Instantiate a cache and retrieve existing user accounts::
+
+        from speckle import SpeckleCache
+
+        cache = SpeckleCache()
+
+        accounts = cache.get_all_accounts()
+
+        # Check if user profile exists
+        email = "foo@bar.com"
+        host = "foo.bar.com"
+        res = cache.account_exists(host, email)
+
+
+"""
+class SpeckleCache():
+    """Class for speckle cache.
+
+    """
     initialized = False
 
     def __init__(self, filepath=None):
+        """Initialize cache object
+
+        This creates a SpeckleCache object using either the default database 
+        location (%LOCALAPPDATA%/SpeckleSettings/SpeckleCache.db) or a user-
+        specified database file.
+
+        
+        Keyword Arguments:
+            filepath {str} -- Optional database filepath (default: {None})
+        """        
         if filepath is None:
             self.db_path = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'SpeckleCache.db'))
         else:
@@ -21,9 +54,21 @@ class SpeckleCache():
             self.initialized = True
 
     def log(self, msg):
+        """Log message
+
+        Utility function to display debug or progress messages.
+        
+        Arguments:
+            msg {str} -- Message to display
+        """            
         print('SpeckleCache: {}'.format(msg))   
 
     def create_database(self):
+        """Create a database
+
+        Creates a .db database at the location specified by self.db_path.
+        
+        """        
         try:
             conn = sqlite3.connect(self.db_path)
         except:
@@ -52,6 +97,15 @@ class SpeckleCache():
                 return None
 
     def try_connect(self):
+        """Tries to connect to the database
+
+        Attempts to connect with the database specified by self.db_path.
+        Returns either a connection to the database or None.
+
+        Returns:
+            Connection -- Connection to database or None          
+        
+        """    
         try:
             conn = sqlite3.connect(self.db_uri, uri=True)
             return conn
@@ -60,6 +114,18 @@ class SpeckleCache():
             return None
 
     def account_exists(self, host, email):
+        """Checks if user profile exists
+
+        Checks the database to see if user profile exists.
+        
+        Arguments:
+            host {str} -- Speckle server
+            email {str} -- User email address
+
+        Returns:
+            Account exists -- True if account is in database, otherwise False              
+        """
+
         conn = self.try_connect()
         if conn == None:
             self.log("Failed to access database.")
@@ -79,7 +145,17 @@ class SpeckleCache():
                 raise
 
     def write_account(self, host, host_name, email, apitoken):
-        # Sanitize
+        """Write a user profile to database
+
+        Writes a user profile to the database specified by self.db_path.
+        
+        Arguments:
+            host {str} -- Speckle server
+            email {str} -- User email address
+            host_name {str} -- Name of Speckle server
+            apitoken {str} -- API token for server authorization
+        """
+
         host = host.strip("/")
         host = host.strip("\\")
         email = email.strip()
@@ -98,6 +174,15 @@ class SpeckleCache():
                 self.log("Account already exists in database.")
 
     def delete_account(self, host, email):
+        """Deletes user profile from database
+
+        Deletes a user profile from the database specified by self.db_path.
+        
+        Arguments:
+            host {str} -- Speckle server
+            email {str} -- User email address
+        """
+
         # Sanitize
         host = host.strip("/")
         host = host.strip("\\")
@@ -116,6 +201,14 @@ class SpeckleCache():
                 self.log("Account already exists in database.")
 
     def delete_all(self, table="CachedObject"):
+        """Deletes all objects from table in database
+
+        Deletes all objects from specified table in the database specified by self.db_path.
+        
+        Keyword Arguments:
+            table {str} -- Table in database to delete all entries from {default: {"CachedObject"}}
+        """
+
         conn = self.try_connect()
         if conn == None:
             raise Exception("Failed to connect to database.")
@@ -129,6 +222,14 @@ class SpeckleCache():
                 self.log("Failed to clear table{}.".format(table))
 
     def get_all_accounts(self):
+        """Get all accounts in database
+
+        Gets all user profiles from the database specified by self.db_path.
+
+        Returns:
+            Accounts -- A list of tuples containing user profile data        
+
+        """
 
         conn = self.try_connect()
         if conn == None:
@@ -145,6 +246,17 @@ class SpeckleCache():
                 raise
 
     def get_account(self, host, email):
+        """Gets user profile from database
+
+        Gets a user profile from the database specified by self.db_path.
+        
+        Arguments:
+            host {str} -- Speckle server
+            email {str} -- User email address
+
+        Returns:
+            Account -- A tuple containing user profile data
+        """        
         conn = self.try_connect()
         if conn == None:
             self.log("Failed to access database.")
