@@ -49,8 +49,5 @@ Usage documentation can be found [here](https://pyspeckle.readthedocs.io/en/late
 ## Maintainers
 SpeckleBlender is written and maintained by [Tom Svilans](http://tomsvilans.com) ([Github](https://github.com/tsvilans)), [Izzy Lyseggen](https://github.com/izzylys) and [Antoine Dao](https://github.com/antoinedao).
 
-## Updates
-
-### January 15, 2019
-
-Pip distribution updated to version 0.2.5. Remember to `pip install speckle --upgrade` to stay up-to-date.
+## Notes
+Commit formatting can be found [here](https://gist.github.com/brianclements/841ea7bffdb01346392c#type).
