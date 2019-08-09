@@ -50,8 +50,8 @@ class SpeckleCache():
 
         self.db_uri = 'file:{}?mode=rw'.format(pathname2url(self.db_path))
 
-        if self.try_connect():
-            self.initialized = True
+        #if self.try_connect():
+        #    self.initialized = True
 
     def log(self, msg):
         """Log message
@@ -91,7 +91,7 @@ class SpeckleCache():
                              ([RestApi] varchar, [DatabaseId] varchar, [Hash] varchar)''')
                 conn.commit()
                 self.log("Created database.")
-                return c.lastrowid           
+                return conn          
             except sqlite3.OperationalError:
                 self.log("Tables already exist.")
                 return None
