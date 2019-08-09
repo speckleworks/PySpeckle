@@ -281,14 +281,14 @@ if __name__ == "__main__":
 
     db.create_database()
 
-    res = db.write_account("https://hestia.speckle.works/api/v1", "Hestia Speckle", "tom.svilans@gmail.com", "abcd")
-    res = db.write_account("https://hestia.speckle.works/api/v99", "Wam Balam", "tom.svilans@hotmail.com", "abcd")
+    res = db.write_account("https://hestia.speckle.works/api/v1", "Hestia Speckle", "foo@bar.com", "abcd")
+    res = db.write_account("https://hestia.speckle.works/api/v99", "Wam Balam", "foo@bar.com", "abcd")
 
-    res = db.account_exists("https://hestia.speckle.works/api/v1", "tom.svilans@gmail.com")
+    res = db.account_exists("https://hestia.speckle.works/api/v1", "foo@bar.com")
     print("Account exists: {}".format(res))
 
-    res = db.get_account("https://hestia.speckle.works/api/v1", "tom.svilans@gmail.com")
+    res = db.get_account("https://hestia.speckle.works/api/v1", "foo@bar.com")
     res = db.get_all_accounts()
     print(res)
 
-    res = db.delete_account("https://hestia.speckle.works/api/v99", "tom.svilans@hotmail.com")
+    res = db.delete_account("https://hestia.speckle.works/api/v99", "foo@bar.com")
