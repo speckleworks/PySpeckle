@@ -1,5 +1,7 @@
 import uuid
 import pytest
+from speckle.Cache import SpeckleCache
+
 
 @pytest.fixture(scope='session')
 def test_create():
