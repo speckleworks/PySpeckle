@@ -1,6 +1,7 @@
 import uuid
 import pytest
 from speckle.SpeckleClient import SpeckleApiClient
+from speckle import SpeckleCache
 
 @pytest.fixture(scope='session')
 def host():
@@ -32,6 +33,17 @@ def client(host, use_ssl, admin_account):
             raise e
     
     return client
+
+@pytest.fixture(scope='session')
+def cache():
+    cache = SpeckleCache("test.db")
+    res = cache.try_connect()
+    if not res:
+        try:
+            conn = cache.create_database()
+            assert conn != None
+        except AssertionError as e:
+            raise e
 
 
 @pytest.fixture(scope='module')
