@@ -242,6 +242,6 @@ class ClientBase():
             attr = getattr(resources, name)
             return attr.Resource(self.s, self.server, self.me)
         except:
-            raise 'Method {} is not supported by SpeckleClient class'.format(name)
+            raise Exception('Method {} is not supported by SpeckleClient class'.format(name))
 
     
