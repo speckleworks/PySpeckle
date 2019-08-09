@@ -1,7 +1,7 @@
 import uuid
 import pytest
+from speckle.Cache import SpeckleCache
 
-@pytest.fixture(scope='session')
 def test_create():
     cache = SpeckleCache("test.db")
     conn = cache.try_connect()
