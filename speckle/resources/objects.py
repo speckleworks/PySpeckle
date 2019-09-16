@@ -6,7 +6,7 @@ from typing import List, Optional
 from speckle.base.resource import ResourceBase, ResourceBaseSchema
 
 NAME = 'objects'
-METHODS = ['list', 'get', 'update', 'create'
+METHODS = ['list', 'get', 'update', 'create',
            'delete', 'comment_get', 'comment_create',
            'get_bulk', 'set_properties']
 
