@@ -7,7 +7,7 @@ from speckle.base.resource import ResourceBaseSchema
 NAME = 'mesh'
 
 class Schema(ResourceBaseSchema):
-    type: Optional[str] = "Mesh"
+    type: str = "Mesh"
     name: Optional[str] = "SpeckleMesh"
     geometryHash: Optional[str]  # Is immediately replaced anyways
     hash: Optional[str]  # Is immediately replaced anyways

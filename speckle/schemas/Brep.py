@@ -3,6 +3,7 @@ import hashlib
 from pydantic import BaseModel, validator
 from typing import List, Optional
 from speckle.base.resource import ResourceBaseSchema
+from speckle.schemas import Mesh
 
 NAME = 'brep'
 
@@ -17,7 +18,8 @@ class Schema(ResourceBaseSchema):
     parent: Optional[List[str]]
     children: Optional[List[str]]
     ancestors: Optional[List[str]]
-    displayValue: dict = {}
+    displayValue: Optional[Mesh.Schema]
+    rawData: str = ""
 
     def dict(self):
         json_string = json.dumps(super(Schema, self).dict()['properties'])

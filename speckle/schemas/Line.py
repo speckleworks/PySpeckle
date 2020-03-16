@@ -3,12 +3,13 @@ import hashlib
 from pydantic import BaseModel, validator
 from typing import List, Optional
 from speckle.base.resource import ResourceBaseSchema
+from speckle.schemas import Interval
 
-NAME = 'null'
+NAME = 'line'
 
 class Schema(ResourceBaseSchema):
-    type: Optional[str] = "Null"
-    name: Optional[str] = "SpeckleNull"
+    type: Optional[str] = "Line"
+    name: Optional[str] = "SpeckleLine"
     geometryHash: Optional[str]  # Is immediately replaced anyways
     hash: Optional[str]  # Is immediately replaced anyways
     applicationId: Optional[str]
@@ -17,6 +18,8 @@ class Schema(ResourceBaseSchema):
     parent: Optional[List[str]]
     children: Optional[List[str]]
     ancestors: Optional[List[str]]
+    Value: List[float] = []
+    Domain: 'Interval' = Interval()
 
     def dict(self):
         json_string = json.dumps(super(Schema, self).dict()['properties'])
