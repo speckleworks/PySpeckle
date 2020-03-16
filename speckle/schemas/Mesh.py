@@ -14,14 +14,3 @@ class Schema(SpeckleObject):
     faces: List[int] = []
     texture_coordinates: Optional[List[float]]
     colors: Optional[List[int]]
-
-
-    def dict(self):
-        json_string = json.dumps(super(Schema, self).dict()['properties'])
-
-        self.geometryHash = hashlib.md5(
-            json_string.encode('utf-8')).hexdigest()
-
-        self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
-
-        return super(Schema, self).dict()

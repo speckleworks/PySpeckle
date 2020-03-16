@@ -15,15 +15,3 @@ class Schema(SpeckleObject):
     Normal: Vector.Schema = Vector.Schema(Value=[0,0,1])
     Xdir: Vector.Schema = Vector.Schema(Value=[1,0,0])
     Ydir: Vector.Schema = Vector.Schema(Value=[0,1,0])
-
-    '''
-    def dict(self):
-        json_string = json.dumps(super(Schema, self).dict()['properties'])
-
-        self.geometryHash = hashlib.md5(
-            json_string.encode('utf-8')).hexdigest()
-
-        self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
-
-        return super(Schema, self).dict()
-    '''

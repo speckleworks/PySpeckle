@@ -14,13 +14,3 @@ class Schema(SpeckleObject):
     Segments: List[dict] = []
     Domain: 'Interval' = Interval()
     Closed: bool = False
-
-    def dict(self):
-        json_string = json.dumps(super(Schema, self).dict()['properties'])
-
-        self.geometryHash = hashlib.md5(
-            json_string.encode('utf-8')).hexdigest()
-
-        self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
-
-        return super(Schema, self).dict()
