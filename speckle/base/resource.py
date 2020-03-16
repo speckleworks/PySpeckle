@@ -125,12 +125,8 @@ class ResourceBase(object):
     def make_request(self, method, path, data=None, comment=False, schema=None):
         r = self._prep_request(method, path, comment, data)
         resp = self.s.send(r)
-
         response_payload = resp.json()
-        print(json.dumps(response_payload, indent=2))
-
         assert response_payload['success'] == True, json.dumps(response_payload)
-        # print(response_payload)
         if 'resources' in response_payload:
             return [self._parse_response(resource, comment, schema) for resource in response_payload['resources']]
         elif 'resource' in response_payload:
