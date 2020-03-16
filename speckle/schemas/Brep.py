@@ -4,20 +4,13 @@ from pydantic import BaseModel, validator
 from typing import List, Optional
 from speckle.base.resource import ResourceBaseSchema
 from speckle.schemas import Mesh
+from speckle.resources.objects import SpeckleObject
 
 NAME = 'brep'
 
-class Schema(ResourceBaseSchema):
+class Schema(SpeckleObject):
     type: Optional[str] = "Brep"
     name: Optional[str] = "SpeckleBrep"
-    geometryHash: Optional[str]  # Is immediately replaced anyways
-    hash: Optional[str]  # Is immediately replaced anyways
-    applicationId: Optional[str]
-    properties: Optional[dict]
-    partOf: Optional[List[str]]
-    parent: Optional[List[str]]
-    children: Optional[List[str]]
-    ancestors: Optional[List[str]]
     displayValue: Optional[Mesh.Schema]
     rawData: str = ""
 

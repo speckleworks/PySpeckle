@@ -3,24 +3,17 @@ import hashlib
 from pydantic import BaseModel, validator
 from typing import List, Optional
 from speckle.base.resource import ResourceBaseSchema
+from speckle.resources.objects import SpeckleObject
 from speckle.schemas import Interval
 
 NAME = 'polycurve'
 
-class Schema(ResourceBaseSchema):
+class Schema(SpeckleObject):
     type: Optional[str] = "Polycurve"
     name: Optional[str] = "SpecklePolycurve"
-    geometryHash: Optional[str]  # Is immediately replaced anyways
-    hash: Optional[str]  # Is immediately replaced anyways
-    applicationId: Optional[str]
-    properties: Optional[dict]
-    partOf: Optional[List[str]]
-    parent: Optional[List[str]]
-    children: Optional[List[str]]
-    ancestors: Optional[List[str]]
     Segments: List[dict] = []
-    Closed: bool = False
     Domain: 'Interval' = Interval()
+    Closed: bool = False
 
     def dict(self):
         json_string = json.dumps(super(Schema, self).dict()['properties'])
