@@ -23,8 +23,8 @@ class SpeckleObject(ResourceBaseSchema):
     children: Optional[List[str]]
     ancestors: Optional[List[str]]
 
-
-    def dict(self):
+    
+    def dict(self, include=None, exclude=None, by_alias=False, exclude_unset=False, exclude_defaults=False, exclude_none=False):
         json_string = json.dumps(super(SpeckleObject, self).dict()['properties'])
 
         self.geometryHash = hashlib.md5(
@@ -32,7 +32,8 @@ class SpeckleObject(ResourceBaseSchema):
 
         self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
 
-        return super(SpeckleObject, self).dict()
+        return super(SpeckleObject, self).dict(include=include, exclude=exclude)
+    
 
 
 class Resource(ResourceBase):

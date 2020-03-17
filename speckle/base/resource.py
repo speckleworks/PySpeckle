@@ -1,6 +1,7 @@
 import json
 from requests import Request
 from pydantic import BaseModel
+from pydoc import locate
 from typing import List, Optional
 import dataclasses
 from dataclasses import dataclass
@@ -113,6 +114,8 @@ class ResourceBase(object):
             return schema.parse_obj(response)
         elif comment:
             return self.comment_schema.parse_obj(response)
+        elif 'type' in response and hasattr(locate("speckle.schemas"), response['type']):
+            return locate("speckle.schemas.{}".format(response['type'])).parse_obj(response)   
         elif self.schema:
             return self.schema.parse_obj(response)
         else:

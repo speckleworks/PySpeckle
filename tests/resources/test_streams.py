@@ -127,9 +127,9 @@ def test_comments(client, created_item, comment):
     assert len(comments) == 1
     assert comments[0].text == comment['text']
 
-@pytest.mark.dependency(depends=['test_create'])
-def test_delete(client, resource):
-    data = client.streams.list()
-    assert data != []
-    for stream in data:
-        client.streams.delete(id=stream.streamId)
+# @pytest.mark.dependency(depends=['test_create'])
+# def test_delete(client, resource):
+#     data = client.streams.list()
+#     assert data != []
+#     for stream in data:
+#         client.streams.delete(id=stream.streamId)
