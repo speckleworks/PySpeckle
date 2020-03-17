@@ -11,27 +11,36 @@ services:
       - mongo
     environment:
       - SERVER_NAME=Docker Speckle Server
+      - CANONICAL_URL=http://localhost:3000
       - SESSION_SECRET=helloworld
-      - REQ_SIZE=16mb
-      - INDENT_RESPONSES=false
-      - MONGODB_URI=mongodb://mongo:27017/speckle_docker
-      - REDIS_URL=redis://redis:6379
-      - EXPOSE_EMAILS=false
+      # optional
+      - MAX_PROC=1
       - PUBLIC_STREAMS=true
-      - PLUGIN_DIRS="./node_modules/@speckle,./plugins"
+      - PLUGIN_DIRS=./node_modules/@speckle,./plugins
+      - PORT=3000
+      - IP=0.0.0.0
+      - REQ_SIZE=10mb
+      - MONGODB_URI=mongodb://mongo:27017/speckle_v3
+      - REDIS_URL=redis://redis:6379
+      - INDENT_RESPONSES=false
+      - EXPOSE_EMAILS=true
+      - FIRST_USER_ADMIN=true
+      - PUBLIC_REGISTRATION=true
+      - USE_LOCAL=true
+      - REDIRECT_URLS=https://app.speckle.systems
     links:
       - redis
       - mongo
   mongo:
     image: mongo:latest
-    ports:
-      - '27017:27017'
+    # ports:
+    #   - '27017:27017'
     networks:
       - webnet
   redis:
     image: redis:alpine
-    ports:
-      - '6379:6379'
+    # ports:
+    #   - '6379:6379'
     networks:
       - webnet
 networks:
