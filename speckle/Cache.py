@@ -30,7 +30,7 @@ class SpeckleCache():
     """
     initialized = False
 
-    def __init__(self, filepath=None):
+    def __init__(self, filepath=None, create=False):
         """Initialize cache object
 
         This creates a SpeckleCache object using either the default database 
@@ -42,13 +42,28 @@ class SpeckleCache():
             filepath {str} -- Optional database filepath (default: {None})
         """        
         if filepath is None:
-            self.db_path = os.path.join(os.getenv('LOCALAPPDATA'), os.path.join('SpeckleSettings', 'SpeckleCache.db'))
+
+            """
+            Get platform-dependent default SpeckleSettings directory
+            """
+            settings_dir = ""
+            if platform.system() == "Windows":
+                settings_dir = os.path.join(os.getenv('LOCALAPPDATA'), 'SpeckleSettings')
+            elif platform.system() == "Darwin":
+                settings_dir = os.path.join(os.getenv('HOME'), 'SpeckleSettings')
+            elif platform.system() == "Linux":
+                settings_dir = os.path.join(os.getenv('HOME'), 'SpeckleSettings')
+
+            self.db_path = os.path.join(settings_dir, 'SpeckleCache.db')
         else:
             self.db_path = filepath
 
         self.log(self.db_path)
 
         self.db_uri = 'file:{}?mode=rw'.format(pathname2url(self.db_path))
+
+        if create:
+            self.create_database(db_path)
 
         #if self.try_connect():
         #    self.initialized = True
