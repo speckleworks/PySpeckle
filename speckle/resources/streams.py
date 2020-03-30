@@ -35,6 +35,10 @@ class Layer(BaseModel):
     def set_guid(cls, v):
         return v or str(uuid.uuid4())
 
+class StreamBaseProperties(BaseModel):
+    units: str = "Meters" # Set default units if none are found
+    tolerance: Optional[float]# = 1.0e-2
+    angleTolerance: Optional[float]# = 1.0e-2
 
 class Stream(ResourceBaseSchema):
     streamId: Optional[str]
@@ -46,6 +50,7 @@ class Stream(ResourceBaseSchema):
     layers: List[Layer] = []
     parent: Optional[str]
     children: List[str] = []
+    baseProperties: Optional[StreamBaseProperties]
 
 class Resource(ResourceBase):
     """API Access class for Streams
