@@ -13,11 +13,11 @@ METHODS = ['list', 'get', 'update', 'create',
 
 class SpeckleObject(ResourceBaseSchema):
     type: Optional[str]
-    name: Optional[str]
+    name: Optional[str] # Name is often null
     geometryHash: Optional[str]  # Is immediately replaced anyways
     hash: Optional[str]  # Is immediately replaced anyways
     applicationId: Optional[str]
-    properties: dict = {}
+    properties: Optional[dict] # Some objects have null properties
     partOf: Optional[List[str]]
     parent: Optional[List[str]]
     children: Optional[List[str]]
