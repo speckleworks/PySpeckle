@@ -20,8 +20,6 @@ This code is WIP and as such should be used with caution, on non-sensitive proje
 
 PySpeckle is a light Python wrapper / interface for the Speckle framework. It can be used independently through Python scripts, or as a base for building various plug-ins, such as [SpeckleBlender](https://github.com/speckleworks/SpeckleBlender). 
 
-At the moment, it copies the same method names from the .NET `SpeckleApiClient`, for consistency's sake. Although the functions are mostly labelled 'Async', they are not yet. This could eventually be implemented with `requests_futures` or `grequests` or similar.
-
 ## Quick Start
 Here is how you initialise a client, authenticate and start speckling:
 ```python
