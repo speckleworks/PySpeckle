@@ -20,8 +20,6 @@ This code is WIP and as such should be used with caution, on non-sensitive proje
 
 PySpeckle is a light Python wrapper / interface for the Speckle framework. It can be used independently through Python scripts, or as a base for building various plug-ins, such as [SpeckleBlender](https://github.com/speckleworks/SpeckleBlender). 
 
-At the moment, it copies the same method names from the .NET `SpeckleApiClient`, for consistency's sake. Although the functions are mostly labelled 'Async', they are not yet. This could eventually be implemented with `requests_futures` or `grequests` or similar.
-
 ## Quick Start
 Here is how you initialise a client, authenticate and start speckling:
 ```python
@@ -36,10 +34,33 @@ client.login(
 
 stream_id = 'HjenwS2s'
 
-objects = client.streams.list_objects(stream_id)
+stream = client.streams.get(stream_id)
 
-for object in objects:
+for object in stream.objects:
   print(object.dict())
+```
+
+To get a list of all available streams and find a particular one by name:
+```python
+streams = client.streams.list()
+name = "JetStream"
+
+try:
+    stream_id = [s for s in streams if s.name == name][0].streamId
+except:
+    print("Stream {} not found.".format(name))
+    return
+```
+
+To get all objects from a stream:
+
+```python
+for o in stream.objects:
+    try:
+        obj = client.objects.get(o.id)
+    except:
+        continue
+    print("Object {} is type {}.".format(obj.name, obj.type))
 ```
 
 Usage documentation can be found [here](https://pyspeckle.readthedocs.io/en/latest/).
