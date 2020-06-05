@@ -36,9 +36,9 @@ client.login(
 
 stream_id = 'HjenwS2s'
 
-objects = client.streams.list_objects(stream_id)
+stream = client.streams.get(stream_id)
 
-for object in objects:
+for object in stream.objects:
   print(object.dict())
 ```
 
