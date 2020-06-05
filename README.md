@@ -42,6 +42,29 @@ for object in stream.objects:
   print(object.dict())
 ```
 
+To get a list of all available streams and find a particular one by name:
+```python
+streams = client.streams.list()
+name = "JetStream"
+
+try:
+    stream_id = [s for s in streams if s.name == name][0].streamId
+except:
+    print("Stream {} not found.".format(name))
+    return
+```
+
+To get all objects from a stream:
+
+```python
+for o in stream.objects:
+    try:
+        obj = client.objects.get(o.id)
+    except:
+        continue
+    print("Object {} is type {}.".format(obj.name, obj.type))
+```
+
 Usage documentation can be found [here](https://pyspeckle.readthedocs.io/en/latest/).
 
 
