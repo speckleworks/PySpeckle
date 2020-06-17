@@ -1,6 +1,8 @@
 language: python
 python:
 - '3.6'
+- '3.7'
+- '3.8'
 services:
 - docker
 env:
@@ -11,21 +13,23 @@ env:
 install:
 - pip install -r requirements.txt
 - pip install -r dev-requirements.txt
+before_install:
+- sudo rm /usr/local/bin/docker-compose
+- curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname
+  -s`-`uname -m` > docker-compose
+- chmod +x docker-compose
+- sudo mv docker-compose /usr/local/bin
+script:
+- docker-compose up -d
+- sleep 10s
+- python -m pytest --cov=speckle tests/
+
 jobs:
   include:
-  - stage: test
-    before_install:
-    - sudo rm /usr/local/bin/docker-compose
-    - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname
-      -s`-`uname -m` > docker-compose
-    - chmod +x docker-compose
-    - sudo mv docker-compose /usr/local/bin
-    script:
-    - docker-compose up -d
-    - sleep 10s
-    - python -m pytest --cov=speckle tests/
   - stage: deploy
     if: branch = master AND (NOT type IN (pull_request))
+    python:
+    - '3.6'
     before_install:
     - nvm install lts/* --latest-npm
     - npm install @semantic-release/exec
