@@ -103,7 +103,17 @@ class ResourceBase(object):
         else:
             url = self._path + path
             if data:
-                if self.schema:
+                if isinstance(data, list):
+                    data_list = []
+                    if self.schema:
+                        for d in data:
+                            if isinstance(d, dict):
+                                dataclass_instance = self.schema.parse_obj(d)
+                                data_list.append(clean_empty(dataclass_instance.dict()))
+                            elif isinstance(d, str):
+                                data_list.append(d)
+                        data = data_list
+                elif self.schema:
                     dataclass_instance = self.schema.parse_obj(data)
                     data = clean_empty(dataclass_instance.dict())
 
@@ -127,6 +137,7 @@ class ResourceBase(object):
         resp = self.s.send(r)
         response_payload = resp.json()
         assert response_payload['success'] == True, json.dumps(response_payload)
+
         if 'resources' in response_payload:
             return [self._parse_response(resource, comment, schema) for resource in response_payload['resources']]
         elif 'resource' in response_payload:

@@ -131,7 +131,7 @@ class Resource(ResourceBase):
         """
         return self.make_request('comment_create', '/' + id, data, comment=True)
 
-    def get_bulk(self, object_ids, query):
+    def get_bulk(self, object_ids, query=None):
         """Retrieve and optionally update a list of Speckle objects
         
         Arguments:
@@ -141,18 +141,21 @@ class Resource(ResourceBase):
         Returns:
             list -- A list of SpeckleObjects
         """
-        query_string = '?'
+        if query:
+            query_string = '?'
 
-        for key, value in query.items:
-            query_string += key + '='
-            if isinstance(value, list):
-                query_string += ','.join(value)
-            elif isinstance(value, str):
-                query_string += value + '&'
-            else:
-                raise 'query dict values must be list or string but key {} is of type {}'.format(key, type(value))
+            for key, value in query.items():
+                query_string += key + '='
+                if isinstance(value, list):
+                    query_string += ','.join(value)
+                elif isinstance(value, str):
+                    query_string += value + '&'
+                else:
+                    raise 'query dict values must be list or string but key {} is of type {}'.format(key, type(value))
 
-        query_string = query_string[:-1] # Remove last '&' or '?' to be clean
+            query_string = query_string[:-1] # Remove last '&' or '?' to be clean
+        else:
+            query_string = ''
 
         return self.make_request('get_bulk', '/getbulk' + query_string, object_ids)
 
