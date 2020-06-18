@@ -7,6 +7,8 @@ import dataclasses
 from dataclasses import dataclass
 from datetime import datetime
 
+SCHEMAS = {}
+
 class ResourceBaseSchema(BaseModel):
     id: Optional[str]
     private: Optional[bool]
