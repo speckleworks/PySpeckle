@@ -31,7 +31,7 @@ class SpeckleObject(ResourceBaseSchema):
 
         #self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
 
-        return super(SpeckleObject, self).dict(include=include, by_alias=True, exclude=exclude)
+        return super(SpeckleObject, self).dict(include=include, by_alias=by_alias, exclude=exclude)
     
 
 
