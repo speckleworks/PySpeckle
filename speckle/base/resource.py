@@ -99,7 +99,7 @@ class ResourceBase(object):
             url = self._comment_path + path
             if data:
                 dataclass_instance = self.comment_schema.parse_obj(data)
-                data = clean_empty(dataclass_instance.dict()) 
+                data = clean_empty(dataclass_instance.dict(by_alias=True))
         else:
             url = self._path + path
             if data:
@@ -109,13 +109,13 @@ class ResourceBase(object):
                         for d in data:
                             if isinstance(d, dict):
                                 dataclass_instance = self.schema.parse_obj(d)
-                                data_list.append(clean_empty(dataclass_instance.dict()))
+                                data_list.append(clean_empty(dataclass_instance.dict(by_alias=True)))
                             elif isinstance(d, str):
                                 data_list.append(d)
                         data = data_list
                 elif self.schema:
                     dataclass_instance = self.schema.parse_obj(data)
-                    data = clean_empty(dataclass_instance.dict())
+                    data = clean_empty(dataclass_instance.dict(by_alias=True))
 
         return self.s.prepare_request(Request(self.method_dict[method]['method'], url, json=data))
 

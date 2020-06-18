@@ -1,7 +1,7 @@
 import sqlite3, contextlib
 from urllib.request import pathname2url
 
-import os
+import os, platform
 
 """Speckle Cache documentation
 
