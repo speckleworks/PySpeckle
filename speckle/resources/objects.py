@@ -29,7 +29,7 @@ class SpeckleObject(ResourceBaseSchema):
 
         self.geometryHash = hashlib.md5(json_string.encode('utf-8')).hexdigest()
 
-        #self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
+        self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
 
         return super(SpeckleObject, self).dict(include=include, by_alias=True, exclude=exclude)
     
@@ -83,8 +83,8 @@ class Resource(ResourceBase):
         Returns:
             SpeckleObject -- The Speckle object
         """
-        query_string = self.make_query(query)
-        return self.make_request('get', '/' + id + query_string)
+        return self.make_request('get', '/' + id, params=query)
+
 
     def update(self, id, data):
         """Update a specific Speckle object
@@ -142,8 +142,7 @@ class Resource(ResourceBase):
         Returns:
             list -- A list of SpeckleObjects
         """
-        query_string = self.make_query(query)
-        return self.make_request('get_bulk', '/getbulk' + query_string, object_ids)
+        return self.make_request('get_bulk', '/getbulk', object_ids, params=query)
 
     def set_properties(self, id, data):
         return self.make_request('set_properties', '/' + id + '/properties', data)

@@ -83,8 +83,7 @@ class Resource(ResourceBase):
         Returns:
             list -- A list of Streams, without objects attached
         """
-        query_string = self.make_query(query)
-        return self.make_request('list', query_string)
+        return self.make_request('list', '/', params=query)
 
     def create(self, data):
         """Create a stream from a data dictionary
@@ -106,8 +105,7 @@ class Resource(ResourceBase):
         Returns:
             Stream -- The stream
         """
-        query_string = self.make_query(query)
-        return self.make_request('get', '/' + id + query_string)
+        return self.make_request('get', '/' + id, params=query)
 
     def update(self, id, data):
         """Update a specific stream
