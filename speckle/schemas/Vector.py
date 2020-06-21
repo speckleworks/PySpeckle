@@ -11,4 +11,4 @@ NAME = 'vector'
 class Schema(SpeckleObject):
     type: str = "Vector"
     name: Optional[str] = "SpeckleVector"
-    Value: List[float] = [0,0,1]
+    value: List[float] = [0,0,1]

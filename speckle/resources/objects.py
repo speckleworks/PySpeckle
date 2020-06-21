@@ -24,15 +24,14 @@ class SpeckleObject(ResourceBaseSchema):
     ancestors: Optional[List[str]]
 
     
-    def dict(self, include=None, exclude=None, by_alias=False, exclude_unset=False, exclude_defaults=False, exclude_none=False):
+    def dict(self, include=None, exclude=None, by_alias=True, exclude_unset=False, exclude_defaults=False, exclude_none=False):
         json_string = json.dumps(super(SpeckleObject, self).dict()['properties'])
 
-        self.geometryHash = hashlib.md5(
-            json_string.encode('utf-8')).hexdigest()
+        self.geometryHash = hashlib.md5(json_string.encode('utf-8')).hexdigest()
 
-        self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
+        #self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
 
-        return super(SpeckleObject, self).dict(include=include, exclude=exclude)
+        return super(SpeckleObject, self).dict(include=include, by_alias=True, exclude=exclude)
     
 
 
@@ -55,13 +54,14 @@ class Resource(ResourceBase):
            
         self.schema = SpeckleObject
 
-    def list(self):
+    def list(self, query=None):
         """List all Speckle objects
         
         Returns:
             list -- A list of Speckle object data class instances
         """
-        return self.make_request('list', '/')
+        query_string = self.make_query(query)        
+        return self.make_request('list', '/' + query_string)
 
     def create(self, data):
         """Create a Speckle object from a data dictionary
@@ -74,7 +74,7 @@ class Resource(ResourceBase):
         """
         return self.make_request('create', '/', data)
 
-    def get(self, id):
+    def get(self, id, query=None):
         """Get a specific Speckle object from the SpeckleServer
         
         Arguments:
@@ -83,7 +83,8 @@ class Resource(ResourceBase):
         Returns:
             SpeckleObject -- The Speckle object
         """
-        return self.make_request('get', '/' + id)
+        return self.make_request('get', '/' + id, params=query)
+
 
     def update(self, id, data):
         """Update a specific Speckle object
@@ -131,7 +132,7 @@ class Resource(ResourceBase):
         """
         return self.make_request('comment_create', '/' + id, data, comment=True)
 
-    def get_bulk(self, object_ids, query):
+    def get_bulk(self, object_ids, query=None):
         """Retrieve and optionally update a list of Speckle objects
         
         Arguments:
@@ -141,20 +142,7 @@ class Resource(ResourceBase):
         Returns:
             list -- A list of SpeckleObjects
         """
-        query_string = '?'
-
-        for key, value in query.items:
-            query_string += key + '='
-            if isinstance(value, list):
-                query_string += ','.join(value)
-            elif isinstance(value, str):
-                query_string += value + '&'
-            else:
-                raise 'query dict values must be list or string but key {} is of type {}'.format(key, type(value))
-
-        query_string = query_string[:-1] # Remove last '&' or '?' to be clean
-
-        return self.make_request('get_bulk', '/getbulk' + query_string, object_ids)
+        return self.make_request('get_bulk', '/getbulk', object_ids, params=query)
 
     def set_properties(self, id, data):
         return self.make_request('set_properties', '/' + id + '/properties', data)

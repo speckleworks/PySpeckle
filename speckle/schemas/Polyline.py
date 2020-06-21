@@ -5,10 +5,12 @@ from typing import List, Optional
 from speckle.base.resource import ResourceBaseSchema
 from speckle.resources.objects import SpeckleObject
 
-
-NAME = 'point'
+NAME = 'polyline'
 
 class Schema(SpeckleObject):
-    type: str = "Point"
-    name: Optional[str] = "SpecklePoint"
-    value: List[float] = [0,0,0]
+    type: str = "Polyline"
+    name: Optional[str] = "SpecklePolyline"
+    value: List[float] = []
+
+    #class Config:
+    #	fields={'Value':'value'}

@@ -11,7 +11,7 @@ NAME = 'plane'
 class Schema(SpeckleObject):
     type: Optional[str] = "Plane"
     name: Optional[str] = "SpecklePlane"
-    Origin: Point.Schema = Point.Schema(Value=[0,0,0])
-    Normal: Vector.Schema = Vector.Schema(Value=[0,0,1])
-    Xdir: Vector.Schema = Vector.Schema(Value=[1,0,0])
-    Ydir: Vector.Schema = Vector.Schema(Value=[0,1,0])
+    origin: Point.Schema = Point.Schema(Value=[0,0,0])
+    normal: Vector.Schema = Vector.Schema(Value=[0,0,1])
+    xdir: Vector.Schema = Vector.Schema(Value=[1,0,0])
+    ydir: Vector.Schema = Vector.Schema(Value=[0,1,0])

@@ -11,9 +11,9 @@ NAME = 'arc'
 class Schema(SpeckleObject):
     type: Optional[str] = "Arc"
     name: Optional[str] = "SpeckleArc"
-    Radius: float = 0.0
-    StartAngle: float = 0.0
-    EndAngle: float = 0.0
-    AngleRadians: float = 0.0
-    Domain: Interval.Schema = Interval.Schema()
-    Plane: Plane = Plane.Schema()
+    radius: float = 0.0
+    startAngle: float = 0.0
+    endAngle: float = 0.0
+    angleRadians: float = 0.0
+    domain: Interval.Schema = Interval.Schema()
+    plane: Plane.Schema = Plane.Schema()

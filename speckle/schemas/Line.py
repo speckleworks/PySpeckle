@@ -12,5 +12,5 @@ NAME = 'line'
 class Schema(SpeckleObject):
     type: Optional[str] = "Line"
     name: Optional[str] = "SpeckleLine"
-    Value: List[float] = []
-    Domain: 'Interval' = Interval()
+    value: List[float] = []
+    domain: 'Interval' = Interval()

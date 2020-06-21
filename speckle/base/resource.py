@@ -7,6 +7,8 @@ import dataclasses
 from dataclasses import dataclass
 from datetime import datetime
 
+SCHEMAS = {}
+
 class ResourceBaseSchema(BaseModel):
     id: Optional[str]
     private: Optional[bool]
@@ -49,8 +51,8 @@ def clean_empty(d):
     if not isinstance(d, (dict, list)):
         return d
     if isinstance(d, list):
-        return [v for v in (clean_empty(v) for v in d) if v]
-    return {k: v for k, v in ((k, clean_empty(v)) for k, v in d.items()) if v}
+        return [v for v in (clean_empty(v) for v in d) if v is not None]
+    return {k: v for k, v in ((k, clean_empty(v)) for k, v in d.items()) if v is not None}
 
 class ResourceBase(object):
 
@@ -92,41 +94,70 @@ class ResourceBase(object):
         self.schema = None
         self.comment_schema = Comment
 
-    def _prep_request(self, method, path, comment, data):
+    def _prep_request(self, method, path, comment, data, params):
         assert method in self.methods, 'method {} not supported for {} calls'.format(method, self.name)
 
         if comment:
             url = self._comment_path + path
             if data:
                 dataclass_instance = self.comment_schema.parse_obj(data)
-                data = clean_empty(dataclass_instance.dict()) 
+                data = clean_empty(dataclass_instance.dict(by_alias=True))
         else:
             url = self._path + path
             if data:
-                if self.schema:
-                    dataclass_instance = self.schema.parse_obj(data)
-                    data = clean_empty(dataclass_instance.dict())
-
-        return self.s.prepare_request(Request(self.method_dict[method]['method'], url, json=data))
+                if isinstance(data, list):
+                    data_list = []
+                    if self.schema:
+                        for d in data:
+                            if isinstance(d, dict):
+                                dataclass_instance = self.schema.parse_obj(d)
+                                data_list.append(clean_empty(dataclass_instance.dict(by_alias=True)))
+                            elif isinstance(d, str):
+                                data_list.append(d)
+                        data = data_list
+                elif self.schema:
+                    if isinstance(data, dict):
+                        dataclass_instance = self.schema.parse_obj(data)
+                    else:
+                        dataclass_instance = data
+                    data = clean_empty(dataclass_instance.dict(by_alias=True))
+        return self.s.prepare_request(Request(self.method_dict[method]['method'], url, json=data, params=params))
 
     def _parse_response(self, response, comment=False, schema=None):
+        """Parse the request response
+
+        Arguments:
+            response {Response} -- A response from the server
+            comment {bool} -- Whether or not the response is a comment
+            schema {Schema} -- Optional schema to parse the response with
+
+        Returns:
+            Schema / dict -- An object derived from SpeckleObject if possible, otherwise 
+            a dict of the response resource
+        """
         if schema:
+            # If a schema is defined, then try to parse it with that
             return schema.parse_obj(response)
         elif comment:
             return self.comment_schema.parse_obj(response)
-        elif 'type' in response and hasattr(locate("speckle.schemas"), response['type']):
-            return locate("speckle.schemas.{}".format(response['type'])).parse_obj(response)   
-        elif self.schema:
+        elif 'type' in response:
+            # Otherwise, check if the incoming type is within the dict of loaded schemas
+            types = response['type'].split('/')
+            for t in reversed(types):
+                if t in SCHEMAS:
+                    return SCHEMAS[t].parse_obj(response)
+        if self.schema:
             return self.schema.parse_obj(response)
-        else:
-            return response
+        return response
 
 
-    def make_request(self, method, path, data=None, comment=False, schema=None):
-        r = self._prep_request(method, path, comment, data)
+    def make_request(self, method, path, data=None, comment=False, schema=None, params=None):
+        r = self._prep_request(method, path, comment, data, params)
         resp = self.s.send(r)
+        resp.raise_for_status()
         response_payload = resp.json()
         assert response_payload['success'] == True, json.dumps(response_payload)
+
         if 'resources' in response_payload:
             return [self._parse_response(resource, comment, schema) for resource in response_payload['resources']]
         elif 'resource' in response_payload:
