@@ -27,10 +27,9 @@ class SpeckleObject(ResourceBaseSchema):
     def dict(self, include=None, exclude=None, by_alias=True, exclude_unset=False, exclude_defaults=False, exclude_none=False):
         json_string = json.dumps(super(SpeckleObject, self).dict()['properties'])
 
-        self.geometryHash = hashlib.md5(
-            json_string.encode('utf-8')).hexdigest()
+        self.geometryHash = hashlib.md5(json_string.encode('utf-8')).hexdigest()
 
-        self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
+        #self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
 
         return super(SpeckleObject, self).dict(include=include, by_alias=True, exclude=exclude)
     

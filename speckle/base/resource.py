@@ -51,8 +51,8 @@ def clean_empty(d):
     if not isinstance(d, (dict, list)):
         return d
     if isinstance(d, list):
-        return [v for v in (clean_empty(v) for v in d) if v]
-    return {k: v for k, v in ((k, clean_empty(v)) for k, v in d.items()) if v}
+        return [v for v in (clean_empty(v) for v in d) if v != None]
+    return {k: v for k, v in ((k, clean_empty(v)) for k, v in d.items()) if v != None}
 
 class ResourceBase(object):
 
@@ -116,9 +116,11 @@ class ResourceBase(object):
                                 data_list.append(d)
                         data = data_list
                 elif self.schema:
-                    dataclass_instance = self.schema.parse_obj(data)
+                    if isinstance(data, dict):
+                        dataclass_instance = self.schema.parse_obj(data)
+                    else:
+                        dataclass_instance = data
                     data = clean_empty(dataclass_instance.dict(by_alias=True))
-
         return self.s.prepare_request(Request(self.method_dict[method]['method'], url, json=data))
 
     def _parse_response(self, response, comment=False, schema=None):
@@ -126,8 +128,8 @@ class ResourceBase(object):
             return schema.parse_obj(response)
         elif comment:
             return self.comment_schema.parse_obj(response)
-        elif 'type' in response and hasattr(locate("speckle.schemas"), response['type']):
-            return locate("speckle.schemas.{}".format(response['type'])).parse_obj(response)   
+        elif 'type' in response and response['type'] in SCHEMAS:
+            return SCHEMAS[response['type']].parse_obj(response)
         elif self.schema:
             return self.schema.parse_obj(response)
         else:
