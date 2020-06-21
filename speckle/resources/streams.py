@@ -50,7 +50,7 @@ class Stream(ResourceBaseSchema):
     layers: List[Layer] = []
     parent: Optional[str]
     children: List[str] = []
-    baseProperties: Optional[StreamBaseProperties]
+    baseProperties: Optional[StreamBaseProperties] = StreamBaseProperties()
 
 class Resource(ResourceBase):
     """API Access class for Streams

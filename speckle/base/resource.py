@@ -139,6 +139,9 @@ class ResourceBase(object):
     def make_request(self, method, path, data=None, comment=False, schema=None):
         r = self._prep_request(method, path, comment, data)
         resp = self.s.send(r)
+        if not resp.ok:
+            print(resp.text)
+            return None
         response_payload = resp.json()
         assert response_payload['success'] == True, json.dumps(response_payload)
 

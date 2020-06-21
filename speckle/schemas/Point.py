@@ -11,4 +11,4 @@ NAME = 'point'
 class Schema(SpeckleObject):
     type: str = "Point"
     name: Optional[str] = "SpecklePoint"
-    Value: List[float] = [0,0,0]
+    value: List[float] = [0,0,0]

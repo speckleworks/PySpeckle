@@ -11,6 +11,6 @@ NAME = 'polycurve'
 class Schema(SpeckleObject):
     type: Optional[str] = "Polycurve"
     name: Optional[str] = "SpecklePolycurve"
-    Segments: List[dict] = []
-    Domain: 'Interval' = Interval()
-    Closed: bool = False
+    segments: List[dict] = []
+    domain: 'Interval' = Interval()
+    closed: bool = False

@@ -9,5 +9,5 @@ NAME = 'interval'
 class Schema(ResourceBaseSchema):
     type: str = "Interval"
     name: Optional[str] = "SpeckleInterval"
-    Start: float = 0.0
-    End: float = 0.0
+    start: float = 0.0
+    end: float = 0.0
