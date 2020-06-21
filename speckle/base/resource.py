@@ -146,3 +146,30 @@ class ResourceBase(object):
             return self._parse_response(response_payload['resource'], comment, schema)
         else:
             return response_payload # Not sure what to do in this scenario or when it might occur
+
+    def make_query(self, query):
+        """Prepare a query string
+        
+        Arguments:
+            query {dict} -- A dictionary to specifiy which fields to retrieve, filters, limits, etc
+        
+        Returns:
+            str -- A query string to append to the request
+        """
+        if query:
+            query_string = '?'
+
+            for key, value in query.items():
+                query_string += key + '='
+                if isinstance(value, list):
+                    query_string += ','.join(value)
+                elif isinstance(value, str):
+                    query_string += value + '&'
+                else:
+                    raise 'query dict values must be list or string but key {} is of type {}'.format(key, type(value))
+
+            query_string = query_string[:-1] # Remove last '&' or '?' to be clean
+        else:
+            query_string = ''
+
+        return query_string

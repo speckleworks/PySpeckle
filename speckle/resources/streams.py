@@ -77,13 +77,14 @@ class Resource(ResourceBase):
 
         self.schema = Stream
 
-    def list(self):
+    def list(self, query={'omit':'objects'}):
         """List all streams
         
         Returns:
             list -- A list of Streams, without objects attached
         """
-        return self.make_request('list', '?omit=objects')
+        query_string = self.make_query(query)
+        return self.make_request('list', query_string)
 
     def create(self, data):
         """Create a stream from a data dictionary
@@ -96,7 +97,7 @@ class Resource(ResourceBase):
         """
         return self.make_request('create', '/', data)
 
-    def get(self, id):
+    def get(self, id, query=None):
         """Get a specific stream from the SpeckleServer
         
         Arguments:
@@ -105,7 +106,8 @@ class Resource(ResourceBase):
         Returns:
             Stream -- The stream
         """
-        return self.make_request('get', '/' + id)
+        query_string = self.make_query(query)
+        return self.make_request('get', '/' + id + query_string)
 
     def update(self, id, data):
         """Update a specific stream
