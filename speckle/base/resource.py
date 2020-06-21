@@ -124,16 +124,31 @@ class ResourceBase(object):
         return self.s.prepare_request(Request(self.method_dict[method]['method'], url, json=data))
 
     def _parse_response(self, response, comment=False, schema=None):
+        """Parse the request response
+
+        Arguments:
+            response {Response} -- A response from the server
+            comment {bool} -- Whether or not the response is a comment
+            schema {Schema} -- Optional schema to parse the response with
+
+        Returns:
+            Schema / dict -- An object derived from SpeckleObject if possible, otherwise 
+            a dict of the response resource
+        """
         if schema:
+            # If a schema is defined, then try to parse it with that
             return schema.parse_obj(response)
         elif comment:
             return self.comment_schema.parse_obj(response)
-        elif 'type' in response and response['type'] in SCHEMAS:
-            return SCHEMAS[response['type']].parse_obj(response)
-        elif self.schema:
+        elif 'type' in response:
+            # Otherwise, check if the incoming type is within the dict of loaded schemas
+            types = response['type'].split('/')
+            for t in reversed(types):
+                if t in SCHEMAS:
+                    return SCHEMAS[t].parse_obj(response)
+        if self.schema:
             return self.schema.parse_obj(response)
-        else:
-            return response
+        return response
 
 
     def make_request(self, method, path, data=None, comment=False, schema=None):

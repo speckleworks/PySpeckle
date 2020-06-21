@@ -1,9 +1,13 @@
 from speckle.base.resource import ResourceBaseSchema, SCHEMAS
+from speckle.resources.objects import SpeckleObject
+
 from pathlib import Path
 import sys
 import inspect
 import pkgutil
 from importlib import import_module
+
+setattr(sys.modules[__name__], "SpeckleObject", SpeckleObject)
 
 for (_, name, _) in pkgutil.iter_modules([Path(__file__).parent]):
 
