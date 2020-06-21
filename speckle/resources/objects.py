@@ -29,7 +29,7 @@ class SpeckleObject(ResourceBaseSchema):
 
         self.geometryHash = hashlib.md5(json_string.encode('utf-8')).hexdigest()
 
-        self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
+        #self.hash = hashlib.md5('{}.{}'.format(self.type, json_string).encode('utf-8')).hexdigest()
 
         return super(SpeckleObject, self).dict(include=include, by_alias=True, exclude=exclude)
     
