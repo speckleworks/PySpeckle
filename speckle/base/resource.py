@@ -154,8 +154,7 @@ class ResourceBase(object):
     def make_request(self, method, path, data=None, comment=False, schema=None, params=None):
         r = self._prep_request(method, path, comment, data, params)
         resp = self.s.send(r)
-        if not resp.ok:
-            return resp.status_code
+        resp.raise_for_status()
         response_payload = resp.json()
         assert response_payload['success'] == True, json.dumps(response_payload)
 
