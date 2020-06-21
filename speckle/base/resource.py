@@ -51,8 +51,8 @@ def clean_empty(d):
     if not isinstance(d, (dict, list)):
         return d
     if isinstance(d, list):
-        return [v for v in (clean_empty(v) for v in d) if v != None]
-    return {k: v for k, v in ((k, clean_empty(v)) for k, v in d.items()) if v != None}
+        return [v for v in (clean_empty(v) for v in d) if v is not None]
+    return {k: v for k, v in ((k, clean_empty(v)) for k, v in d.items()) if v is not None}
 
 class ResourceBase(object):
 
@@ -155,8 +155,7 @@ class ResourceBase(object):
         r = self._prep_request(method, path, comment, data, params)
         resp = self.s.send(r)
         if not resp.ok:
-            print(resp.text)
-            return None
+            return resp.status_code
         response_payload = resp.json()
         assert response_payload['success'] == True, json.dumps(response_payload)
 
