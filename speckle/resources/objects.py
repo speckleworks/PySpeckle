@@ -33,7 +33,8 @@ class SpeckleObject(ResourceBaseSchema):
 
         return super(SpeckleObject, self).dict(include=include, by_alias=True, exclude=exclude)
     
-
+    class Config():
+        extra = 'allow'
 
 class Resource(ResourceBase):
     """API Access class for Speckle Objects
