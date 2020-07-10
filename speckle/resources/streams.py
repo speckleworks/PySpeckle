@@ -183,7 +183,7 @@ class Resource(ResourceBase):
         """
         return self.make_request('diff', '/' + id + '/diff/' + other_id)
 
-    def list_objects(self, id):
+    def list_objects(self, id, query=None):
         """Return the list of objects in a stream
         
         Arguments:
@@ -192,7 +192,7 @@ class Resource(ResourceBase):
         Returns:
             list -- A list of Speckle objects
         """
-        return self.make_request('list_objects', '/' + id + '/objects', schema=SpeckleObject)
+        return self.make_request('list_objects', '/' + id + '/objects', schema=SpeckleObject, params=query)
 
     def list_clients(self, id):
         """Return the list of api clients connected to the stream
