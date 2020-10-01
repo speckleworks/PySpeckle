@@ -1,11 +1,12 @@
 import sqlite3, contextlib
 from urllib.request import pathname2url
 
-import os, platform
+import os
+import pathlib
 
 """Speckle Cache documentation
 
-The SpeckleCache class is used to manage user profiles and cached 
+The SpeckleCache class is used to manage user profiles and cached
 objects and streams.
 
 Example:
@@ -37,26 +38,26 @@ class SpeckleCache():
         location (%LOCALAPPDATA%/SpeckleSettings/SpeckleCache.db) or a user-
         specified database file.
 
-        
+
         Keyword Arguments:
             filepath {str} -- Optional database filepath (default: {None})
-        """        
+        """
         if filepath is None:
 
             """
             Get platform-dependent default SpeckleSettings directory
             """
-            settings_dir = ""
-            if platform.system() == "Windows":
-                settings_dir = os.path.join(os.getenv('LOCALAPPDATA'), 'SpeckleSettings')
-            elif platform.system() == "Darwin":
-                settings_dir = os.path.join(os.getenv('HOME'), 'SpeckleSettings')
-            elif platform.system() == "Linux":
-                settings_dir = os.path.join(os.getenv('HOME'), 'SpeckleSettings')
+            settings_dir = os.path.join(
+                os.environ.get('APPDATA') or
+                os.environ.get('XDG_CONFIG_HOME') or
+                os.path.join(os.environ['HOME'], '.config'),
+                "SpeckleSettings"
+            )
 
-            self.db_path = os.path.join(settings_dir, 'SpeckleCache.db')
-        else:
-            self.db_path = filepath
+            pathlib.Path(settings_dir).mkdir(parents=True, exist_ok=True)
+
+            filepath = os.path.join(settings_dir, 'SpeckleCache.db')
+        self.db_path = filepath
 
         self.log(self.db_path)
 
