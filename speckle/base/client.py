@@ -118,6 +118,26 @@ class ClientBase():
             'Authorization': self.me['token'],
         })
 
+    def login_with_token(self, token):
+        """Login user to the speckle server using an API token
+
+        If your server uses an alternate login mechansim (e.g. ActiveDirectory), you can use this function to
+        store your API token in the client.
+
+        Arguments:
+            token {str} -- your Speckle API token (format 'JWT xxxxxxx', found on the Speckle web interface)"""
+        
+        if type(token) is not str:
+            raise ValueError("Token must be a string")
+
+        if (token[0:3] != 'JWT'):
+            raise ValueError("Toekn must begin with 'JWT'")
+        
+        self.s.headers.update({
+            'content-type': 'application/json',
+            'Authorization': token,
+        })
+    
     def websockets(self, stream_id, client_id=None, header=None,
                    on_open=None, on_message=None, on_error=None,
                    on_close=None, on_ping=None, on_pong=None,

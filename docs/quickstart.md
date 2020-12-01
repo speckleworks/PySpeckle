@@ -38,6 +38,15 @@ client.login(
 )
 ```
 
+If your server uses an alternate login mechanism (e.g. ActiveDirectory integration), you can use the `login_with_token` method, using the API token that you find in your user profile on 
+the Speckle server web interface:
+
+```python
+client.login_with_token(
+    token='JWT xwy334xdkfksldf....'
+)
+```
+
 ## Sending and Retrieving Things
 At the moment the api client takes dictionary payloads as data inputs (a `Speckle Object` for example) and returns data classes in most cases (essentially a class instance). If a data class is not returned then the object return is a dictionary. 
 
