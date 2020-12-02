@@ -12,9 +12,6 @@ from speckle import SpeckleApiClient
 client = SpeckleApiClient('hestia.speckle.works')
 ```
 
-If you are already registered to the server and have logged in via one of the Speckle clients (Grasshopper, Revit, etc...), the SpeckleApiClient will automatically find your credentials
-and you can skip the next section.
-
 ## Registering and Logging in
 Before you can do anything with Speckle you need to register yourself to the server you are going to be using. If you have already registered then you can skip the first code section below and look at the one right after where we explain how to login.
 

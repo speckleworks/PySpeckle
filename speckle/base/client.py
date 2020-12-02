@@ -28,9 +28,6 @@ import requests
 from speckle import resources
 from websocket import WebSocketApp
 import urllib
-import sqlite3
-from os.path import exists, expandvars
-from re import match
 
 class ClientBase():
     """Base class for http speckle client
@@ -58,27 +55,6 @@ class ClientBase():
         self.me = None
         self.s = requests.Session()
         self.verbose = verbose
-
-        # Check if the current user is already registered to this server on this computer
-        try:
-            speckle_cache_path = expandvars(r'%LOCALAPPDATA%/SpeckleSettings/SpeckleCache.db')
-            if not exists(speckle_cache_path):
-                raise FileExistsError("No Speckle Cache present on this machine")
-            
-            with sqlite3.connect(speckle_cache_path) as conn:
-                c = conn.cursor()
-
-                ## The Speckle cache does not include the version indicator
-                server_key = match("(.*?api)", self.server).group(0)
-                c.execute("SELECT Email, Token FROM Account WHERE RestApi = ?", (server_key,))
-
-                (email, token) = c.fetchone()
-                self.me = {'email': email, 'token': token}
-                self.login_with_token(token)
-                self.me['email'] = email # self.me is created by login_with_token, so add the email after login_with_otken
-
-        except Exception as e: # this will trigger if there is no Speckle Cache or if the user is not registered
-            pass ## we tried, but since this is an automatic attempt (not a user request) we simply fail silently
 
     def register(self, email, password, company, name=None, surname=None):
         """Register a new user to the speckle server
@@ -148,7 +124,8 @@ class ClientBase():
         store your API token in the client.
 
         Arguments:
-            token {str} -- your Speckle API token (format 'JWT xxxxxxx', found on the Speckle web interface)"""
+            token {str} -- your Speckle API token (format 'JWT xxxxxxx', found on the Speckle web interface)
+        """
         
         if type(token) is not str:
             raise ValueError("Token must be a string")
@@ -161,8 +138,8 @@ class ClientBase():
             'Authorization': token,
         })
 
-        if self.me is None:
-            self.me = {}
+        full_profile = self.accounts.get_profile()
+        self.me = {k: full_profile.get(k, None) for k in ('id', 'email', 'name', 'surname', 'company', 'avatar', 'role', 'apitoken')}
         self.me['token'] = token
     
     def websockets(self, stream_id, client_id=None, header=None,
