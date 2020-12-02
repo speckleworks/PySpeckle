@@ -56,6 +56,14 @@ class ClientBase():
         self.s = requests.Session()
         self.verbose = verbose
 
+    @property
+    def token(self):
+        return self.s.headers.get("Authorization")
+
+    @token.setter
+    def token(self, value):
+        self.s.headers['Authorization'] = value
+
     def register(self, email, password, company, name=None, surname=None):
         """Register a new user to the speckle server
 
