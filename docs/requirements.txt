@@ -1,2 +1,2 @@
 m2r==0.2.1
-pydantic==0.26
+pydantic==1.6.2
